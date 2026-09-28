@@ -38,6 +38,10 @@
   async function createDeal() {
     const title = document.getElementById('title').value;
     const amount = document.getElementById('amount').value;
+    const buyer_phone = document.getElementById('buyer_phone').value;
+    const seller_phone = document.getElementById('seller_phone').value;
+    const seller_sheba = document.getElementById('seller_sheba').value;
+    const fee_payer = document.getElementById('fee_payer').value;
     const box = document.getElementById('result');
 
     if(!title || !amount) {
@@ -46,8 +50,25 @@
     }
 
     box.style.display = 'block';
-    const fakeId = 'deal_' + Math.random().toString(36).substring(2, 8);
-    box.innerHTML = `معامله با موفقیت ثبت شد!<br><b>شناسه معامله:</b> ${fakeId}<br>لینک پرداخت اختصاصی آماده اتصال به کلودفلر است.`;
+    box.innerText = 'در حال ثبت در سرور...';
+
+    try {
+      const response = await fetch('/api/deals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, amount, buyer_phone, seller_phone, seller_sheba, fee_payer })
+      });
+
+      const res = await response.json();
+
+      if(res.success) {
+        box.innerHTML = `✅ معامله با موفقیت در سرور ثبت شد!<br><b>شناسه معامله:</b> ${res.dealId}<br>لینک اختصاصی ساخته شد.`;
+      } else {
+        box.innerText = 'خطا در ثبت: ' + (res.error || 'مشکلی رخ داد');
+      }
+    } catch(err) {
+      box.innerText = 'خطا در برقراری ارتباط با سرور کلودفلر';
+    }
   }
 </script>
 
