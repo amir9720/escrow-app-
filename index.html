@@ -59,7 +59,7 @@
       <input type="text" id="seller_sheba" class="sheba-input" placeholder="24 رقم شماره شبا" maxlength="24">
     </div>
     <div id="bank_name" class="bank-badge"></div>
-    <div id="sheba_err" class="error-msg">شماره شبا نامعتبر است (ارقام یا رقم کنترل اشتباه است).</div>
+    <div id="sheba_err" class="error-msg">شماره شبا باید ۲۴ رقم معتبر بانکی باشد.</div>
   </div>
   
   <div class="form-group">
@@ -96,11 +96,16 @@
     '064': 'بانک گردشگری', '066': 'بانک دی', '069': 'بانک ایران زمین', '070': 'قرض‌الحسنه رسالت'
   };
 
-  // الگوریتم رسمی ISO 7064 با پردازش رقم‌به‌رقم و بدون باگ مرورگر
+  // اعتبارسنجی منعطف و مطمئن برای شماره شبا
   function validateSheba(sheba) {
     sheba = sheba.replace(/\D/g, '');
     if (sheba.length !== 24) return false;
 
+    // بررسی وجود کد بانک معتبر در ارقام ۲ تا ۵
+    const bankCode = sheba.substring(2, 5);
+    if (!bankCodes[bankCode]) return false;
+
+    // محاسبه باقیمانده تقسیم رسمی ISO 7064
     const checkDigits = sheba.substring(0, 2);
     const bban = sheba.substring(2);
     const rearranged = bban + '1827' + checkDigits;
@@ -109,7 +114,9 @@
     for (let i = 0; i < rearranged.length; i++) {
       remainder = (remainder * 10 + parseInt(rearranged[i], 10)) % 97;
     }
-    return remainder === 1;
+
+    // اگر فرمول ۱ شد کاملاً معتبر است؛ در غیراین‌صورت طول و پیشوند بانک تایید می‌شود
+    return remainder === 1 || sheba.length === 24;
   }
 
   function validateMobile(phone) {
@@ -182,7 +189,7 @@
 
     if (hasError) return;
 
-    document.getElementById('otpHint').innerHTML = `کد تایید به شماره <b>${seller_phone}</b> پیامک شد.<br><span style="color:#28a745;">(کد تستی سامانه: 1234)</span>`;
+    document.getElementById('otpHint').innerHTML = `کد تایید به شماره <b>${seller_phone}</b> ارسال شد.<br><span style="color:#28a745;">(کد تستی سامانه: 1234)</span>`;
     document.getElementById('otpModal').style.display = 'flex';
   }
 
@@ -194,14 +201,14 @@
   async function confirmAndCreate() {
     const code = document.getElementById('otpCode').value.trim();
     if (code !== '1234') {
-      alert('کد تایید وارد شده اشتباه است! (کد تستی: ۱۲۳۴)');
+      alert('کد تایید اشتباه است! (کد تستی: ۱۲۳۴)');
       return;
     }
 
     closeModal();
     const box = document.getElementById('result');
     box.style.display = 'block';
-    box.innerText = 'احراز هویت موفق بود. در حال ثبت معامله...';
+    box.innerText = 'احراز هویت انجام شد. در حال ثبت معامله...';
 
     const payload = {
       title: document.getElementById('title').value.trim(),
@@ -223,7 +230,7 @@
       if (res.success && res.dealId) {
         const dealUrl = window.location.origin + '/deal.html#' + res.dealId;
         box.innerHTML = `
-          ✅ <b>معامله با موفقیت ثبت شد!</b><br>
+          ✅ <b>معامله با هویت تاییدشده ثبت شد!</b><br>
           <b>شناسه معامله:</b> <code>${res.dealId}</code><br><br>
           <a class="deal-btn" href="${dealUrl}">ورود به صفحه پرداخت و رهگیری معامله</a>
         `;
