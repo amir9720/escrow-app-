@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>جزئیات معامله امن</title>
+  <style>
+    body { font-family: Tahoma, sans-serif; background: #f4f6f8; margin: 0; padding: 20px; }
+    .card { max-width: 500px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    h2 { margin-top: 0; color: #222; text-align: center; }
+    .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+    .pending { background: #fff3cd; color: #856404; }
+    .escrow { background: #cce5ff; color: #004085; }
+    .completed { background: #d4edda; color: #155724; }
+    button { width: 100%; padding: 12px; margin-top: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .btn-pay { background: #28a745; color: #fff; }
+    .btn-release { background: #0066cc; color: #fff; }
+  </style>
+</head>
+<body>
+
+<div class="card" id="content">
+  <h2>در حال دریافت اطلاعات معامله...</h2>
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const dealId = urlParams.get('id');
+
+  const statusMap = {
+    'pending_payment': { text: 'در انتظار پرداخت خریدار', class: 'pending' },
+    'in_escrow': { text: 'وجه در امانت سایت (آماده تحویل)', class: 'escrow' },
+    'completed': { text: 'معامله پایان یافت و تسویه شد', class: 'completed' }
+  };
+
+  async function loadDeal() {
+    if(!dealId) {
+      document.getElementById('content').innerHTML = '<h2>شناسه معامله نامعتبر است</h2>';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/deal-info?id=${dealId}`);
+      const data = await res.json();
+
+      if(!data.success) {
+        document.getElementById('content').innerHTML = `<h2>${data.error || 'معامله یافت نشد'}</h2>`;
+        return;
+      }
+
+      const d = data.deal;
+      const st = statusMap[d.status] || { text: d.status, class: 'pending' };
+
+      document.getElementById('content').innerHTML = `
+        <h2>${d.title}</h2>
+        <div class="row"><span>وضعیت:</span><span class="badge ${st.class}">${st.text}</span></div>
+        <div class="row"><span>مبلغ معامله:</span><b>${Number(d.amount).toLocaleString('fa-IR')} تومان</b></div>
+        <div class="row"><span>پرداخت‌کننده کارمزد:</span><span>${d.fee_payer === 'buyer' ? 'خریدار' : (d.fee_payer === 'seller' ? 'فروشنده' : 'بالمناصفه')}</span></div>
+        <div class="row"><span>شناسه معامله:</span><code>${d.id}</code></div>
+        
+        ${d.status === 'pending_payment' ? `<button class="btn-pay" onclick="payDeal('${d.id}')">پرداخت آنلاین و انتقال وجه به امانت</button>` : ''}
+        ${d.status === 'in_escrow' ? `<button class="btn-release" onclick="completeDeal('${d.id}')">تایید تحویل کالا / خدمات و آزادسازی وجه</button>` : ''}
+      `;
+    } catch(e) {
+      document.getElementById('content').innerHTML = '<h2>خطا در اتصال به سرور</h2>';
+    }
+  }
+
+  async function payDeal(id) {
+    await fetch('/api/deal-action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, action: 'pay' })
+    });
+    location.reload();
+  }
+
+  async function completeDeal(id) {
+    if(confirm('آیا تحویل کامل را تایید می‌کنید؟ پس از این مرحله وجه به حساب فروشنده واریز خواهد شد.')) {
+      await fetch('/api/deal-action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, action: 'complete' })
+      });
+      location.reload();
+    }
+  }
+
+  loadDeal();
+</script>
+
+</body>
+</html>
