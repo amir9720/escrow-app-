@@ -12,7 +12,9 @@
     button { background: #0066cc; color: #fff; font-weight: bold; border: none; cursor: pointer; margin-top: 15px; }
     button:hover { background: #0052a3; }
     .status { margin-top: 15px; padding: 15px; background: #eef6ff; border-radius: 8px; display: none; line-height: 1.8; text-align: center; }
-    .deal-btn { display: inline-block; margin-top: 10px; padding: 10px 18px; background: #28a745; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold; }
+    .deal-btn { display: block; margin-top: 10px; padding: 12px 18px; background: #28a745; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; text-align: center; }
+    .deal-btn:hover { background: #218838; }
+    .copy-btn { background: #6c757d; font-size: 13px; padding: 8px; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -62,11 +64,14 @@
 
       const res = await response.json();
 
-      if(res.success) {
+      if(res.success && res.dealId) {
+        const dealUrl = window.location.origin + '/deal.html?id=' + encodeURIComponent(res.dealId);
+
         box.innerHTML = `
           ✅ <b>معامله با موفقیت ثبت شد!</b><br>
           <b>شناسه:</b> <code>${res.dealId}</code><br><br>
-          <a class="deal-btn" href="/deal.html?id=${res.dealId}">مشاهده و صفحه پرداخت معامله</a>
+          <a class="deal-btn" href="${dealUrl}">ورود به صفحه پرداخت و رهگیری معامله</a>
+          <button type="button" class="copy-btn" onclick="navigator.clipboard.writeText('${dealUrl}'); alert('لینک کپی شد!');">📋 کپی لینک معامله برای ارسال به طرفین</button>
         `;
       } else {
         box.innerText = 'خطا در ثبت: ' + (res.error || 'مشکلی رخ داد');
