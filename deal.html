@@ -8,53 +8,76 @@
     body { font-family: Tahoma, sans-serif; background: #f4f6f8; margin: 0; padding: 20px; }
     .card { max-width: 500px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     h2 { margin-top: 0; color: #222; text-align: center; }
-    .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+    .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; font-size: 15px; }
+    .badge { padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
     .pending { background: #fff3cd; color: #856404; }
     .escrow { background: #cce5ff; color: #004085; }
     .completed { background: #d4edda; color: #155724; }
-    button { width: 100%; padding: 12px; margin-top: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    button { width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
     .btn-pay { background: #28a745; color: #fff; }
     .btn-release { background: #0066cc; color: #fff; }
+    input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 16px; }
   </style>
 </head>
 <body>
 
 <div class="card" id="content">
-  <h2>در حال دریافت اطلاعات معامله...</h2>
+  <h2 style="color: #666;">در حال بارگذاری معامله...</h2>
 </div>
-  <script>
-  let urlParams = new URLSearchParams(window.location.search);
-  let dealId = urlParams.get('id');
 
-  // اگر شناسه بدون مساوی یا در انتهای آدرس آمده باشد
-  if (!dealId && window.location.href.includes('?id=')) {
-    dealId = window.location.href.split('?id=')[1].split('&')[0];
+<script>
+  // استخراج هوشمند شناسه معامله از هر کجای آدرس
+  function getDealId() {
+    // ۱. بررسی کوئری استرینگ معمولی
+    const params = new URLSearchParams(window.location.search);
+    let id = params.get('id');
+    if (id && id.trim()) return id.trim();
+
+    // ۲. بررسی حالت هش (deal.html#deal_xxxx)
+    if (window.location.hash) {
+      const hash = window.location.hash.replace('#', '').trim();
+      if (hash) return hash;
+    }
+
+    // ۳. بررسی متن کل آدرس برای پیدا کردن deal_
+    const fullUrl = window.location.href;
+    const match = fullUrl.match(/deal_[a-z0-9]+/i);
+    if (match) return match[0];
+
+    return null;
   }
 
   const statusMap = {
     'pending_payment': { text: 'در انتظار پرداخت خریدار', class: 'pending' },
-    'in_escrow': { text: 'وجه در امانت سایت (آماده تحویل)', class: 'escrow' },
-    'completed': { text: 'معامله پایان یافت و تسویه شد', class: 'completed' }
+    'in_escrow': { text: 'وجه در امانت سایت (آماده تحویل کالا)', class: 'escrow' },
+    'completed': { text: 'معامله با موفقیت انجام و تسویه شد', class: 'completed' }
   };
 
   async function loadDeal() {
-    if(!dealId || dealId.trim() === '') {
+    const dealId = getDealId();
+
+    if (!dealId) {
       document.getElementById('content').innerHTML = `
-        <h2>شناسه معامله وارد نشده است</h2>
-        <p style="text-align:center;color:#666;">لطفاً شناسه معامله را وارد کنید:</p>
-        <input type="text" id="manual_id" placeholder="مثال: deal_peczxi" style="width:100%;padding:10px;margin-bottom:10px;box-sizing:border-box;">
-        <button onclick="window.location.href='./deal.html?id=' + document.getElementById('manual_id').value.trim()">مشاهده معامله</button>
+        <h2>شناسه معامله یافت نشد</h2>
+        <p style="text-align:center;color:#666;font-size:14px;">لطفاً شناسه معامله خود را وارد کنید:</p>
+        <input type="text" id="manual_id" placeholder="مثال: deal_peczxi">
+        <button class="btn-release" onclick="submitManualId()">مشاهده جزئیات معامله</button>
+        <br><br>
+        <a href="/" style="display:block;text-align:center;color:#0066cc;text-decoration:none;">بازگشت به صفحه اصلی</a>
       `;
       return;
     }
 
     try {
-      const res = await fetch(`/api/deal-info?id=${encodeURIComponent(dealId)}`);
+      const res = await fetch('/api/deal-info?id=' + encodeURIComponent(dealId));
       const data = await res.json();
 
-      if(!data.success) {
-        document.getElementById('content').innerHTML = `<h2>${data.error || 'معامله پیدا نشد'}</h2><br><a href="/" style="display:block;text-align:center;">بازگشت به صفحه اصلی</a>`;
+      if (!data.success || !data.deal) {
+        document.getElementById('content').innerHTML = `
+          <h2 style="color:#d9534f;">معامله‌ای با این شناسه یافت نشد</h2>
+          <p style="text-align:center;color:#777;">شناسه بررسی شده: <code>${dealId}</code></p>
+          <a href="/" style="display:block;text-align:center;margin-top:15px;color:#0066cc;text-decoration:none;">بازگشت به صفحه اصلی</a>
+        `;
         return;
       }
 
@@ -68,11 +91,20 @@
         <div class="row"><span>پرداخت‌کننده کارمزد:</span><span>${d.fee_payer === 'buyer' ? 'خریدار' : (d.fee_payer === 'seller' ? 'فروشنده' : 'بالمناصفه')}</span></div>
         <div class="row"><span>شناسه معامله:</span><code>${d.id}</code></div>
         
-        ${d.status === 'pending_payment' ? `<button class="btn-pay" onclick="payDeal('${d.id}')">پرداخت آنلاین و انتقال وجه به امانت</button>` : ''}
-        ${d.status === 'in_escrow' ? `<button class="btn-release" onclick="completeDeal('${d.id}')">تایید تحویل کالا / خدمات و آزادسازی وجه</button>` : ''}
+        ${d.status === 'pending_payment' ? `<button class="btn-pay" onclick="payDeal('${d.id}')">💳 پرداخت آنلاین (انتقال وجه به امانت سایت)</button>` : ''}
+        ${d.status === 'in_escrow' ? `<button class="btn-release" onclick="completeDeal('${d.id}')">✅ تایید تحویل و آزادسازی وجه به فروشنده</button>` : ''}
+        ${d.status === 'completed' ? `<div style="text-align:center;color:#28a745;font-weight:bold;margin-top:15px;">این معامله با موفقیت به پایان رسیده است.</div>` : ''}
       `;
     } catch(e) {
-      document.getElementById('content').innerHTML = '<h2>خطا در اتصال به سرور</h2>';
+      document.getElementById('content').innerHTML = '<h2 style="color:#d9534f;">خطا در برقراری ارتباط با دیتابیس</h2>';
+    }
+  }
+
+  function submitManualId() {
+    const val = document.getElementById('manual_id').value.trim();
+    if (val) {
+      window.location.href = './deal.html#' + val;
+      location.reload();
     }
   }
 
@@ -86,7 +118,7 @@
   }
 
   async function completeDeal(id) {
-    if(confirm('آیا تحویل کامل را تایید می‌کنید؟ پس از این مرحله وجه به حساب فروشنده واریز خواهد شد.')) {
+    if (confirm('آیا دریافت کامل کالا یا خدمات را تایید می‌کنید؟ با تایید شما وجه برای فروشنده آزاد می‌شود.')) {
       await fetch('/api/deal-action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
