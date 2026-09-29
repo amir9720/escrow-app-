@@ -21,7 +21,6 @@
     .status { margin-top: 15px; padding: 15px; background: #eef6ff; border-radius: 8px; display: none; line-height: 1.8; text-align: center; }
     .deal-btn { display: block; margin-top: 10px; padding: 12px; background: #28a745; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; text-align: center; }
     
-    /* مودال کد تایید */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
     .modal-box { background: #fff; padding: 25px; border-radius: 12px; max-width: 360px; width: 90%; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
   </style>
@@ -76,7 +75,6 @@
   <div id="result" class="status"></div>
 </div>
 
-<!-- مودال دریافت کد تایید OTP -->
 <div id="otpModal" class="modal">
   <div class="modal-box">
     <h3>تایید شماره موبایل</h3>
@@ -88,7 +86,6 @@
 </div>
 
 <script>
-  // جدول کدهای بانک مرکزی در شماره شبا
   const bankCodes = {
     '010': 'بانک مرکزی', '011': 'بانک صنعت و معدن', '012': 'بانک ملت', '013': 'بانک رفاه کارگران',
     '014': 'بانک مسکن', '015': 'بانک سپه', '016': 'بانک کشاورزی', '017': 'بانک ملی ایران',
@@ -99,14 +96,14 @@
     '064': 'بانک گردشگری', '066': 'بانک دی', '069': 'بانک ایران زمین', '070': 'قرض‌الحسنه رسالت'
   };
 
-  // الگوریتم رسمی ISO 7064 (MOD-97) برای شبا
   function validateSheba(sheba) {
     sheba = sheba.replace(/\D/g, '');
     if (sheba.length !== 24) return false;
 
-    // چینش استاندارد: کد کشور IR معادل عددی 1827 در انتها قرار می‌گیرد
-    const rearranged = sheba.substring(2) + '1827' + sheba.substring(0, 2);
-    
+    const checkDigits = sheba.substring(0, 2);
+    const bban = sheba.substring(2);
+    const rearranged = bban + '1827' + checkDigits;
+
     try {
       return BigInt(rearranged) % 97n === 1n;
     } catch(e) {
@@ -114,12 +111,10 @@
     }
   }
 
-  // اعتبارسنجی فرمت شماره موبایل ایران
   function validateMobile(phone) {
     return /^09\d{9}$/.test(phone.trim());
   }
 
-  // رویداد بررسی و تشخیص لحظه‌ای شبا
   document.getElementById('seller_sheba').addEventListener('input', function(e) {
     let val = e.target.value.replace(/\D/g, '');
     e.target.value = val;
@@ -186,7 +181,6 @@
 
     if (hasError) return;
 
-    // نمایش مدال تایید و راهنمای کد تست
     document.getElementById('otpHint').innerHTML = `کد تایید به شماره <b>${seller_phone}</b> پیامک شد.<br><span style="color:#28a745;">(کد تستی سامانه: 1234)</span>`;
     document.getElementById('otpModal').style.display = 'flex';
   }
