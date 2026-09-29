@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>داشبورد معامله امن | ورود و احراز هویت</title>
+  <style>
+    body { font-family: Tahoma, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; color: #333; }
+    .container { max-width: 500px; margin: 0 auto; background: #fff; border-radius: 14px; padding: 22px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    h2, h3 { text-align: center; margin-top: 0; }
+    .tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 20px; }
+    .tab-btn { flex: 1; padding: 12px; background: none; border: none; font-weight: bold; font-family: inherit; font-size: 14px; cursor: pointer; color: #777; border-bottom: 3px solid transparent; }
+    .tab-btn.active { color: #0066cc; border-bottom: 3px solid #0066cc; }
+    .form-group { margin-bottom: 14px; text-align: right; }
+    label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 6px; color: #444; }
+    input, select, button { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; }
+    .card-input { direction: ltr; text-align: center; letter-spacing: 2px; font-size: 16px; font-family: monospace; }
+    .badge { font-size: 12px; margin-top: 5px; font-weight: bold; }
+    .badge-bank { color: #0066cc; }
+    .badge-err { color: #d9534f; display: none; }
+    .btn-main { background: #0066cc; color: #fff; font-weight: bold; border: none; cursor: pointer; margin-top: 15px; padding: 14px; }
+    .btn-main:hover { background: #0052a3; }
+    .deal-card { background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+    .deal-title { font-weight: bold; font-size: 15px; margin-bottom: 5px; }
+    .deal-meta { font-size: 13px; color: #666; display: flex; justify-content: space-between; }
+    .status-pill { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #e2e8f0; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- بخش احراز هویت و ثبت‌نام -->
+  <div id="authSection">
+    <h2>ورود / ثبت‌نام در سامانه</h2>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchAuthTab('register')">تکمیل پروفایل و احراز هویت</button>
+      <button class="tab-btn" onclick="switchAuthTab('login')">ورود سریع</button>
+    </div>
+
+    <div id="registerForm">
+      <div class="form-group">
+        <label>نام و نام خانوادگی:</label>
+        <input type="text" id="reg_name" placeholder="مثال: علی محمدی">
+      </div>
+
+      <div class="form-group">
+        <label>شماره موبایل:</label>
+        <input type="tel" id="reg_phone" placeholder="09xxxxxxxxx" maxlength="11">
+      </div>
+
+      <div class="form-group">
+        <label>کد ملی (۱۰ رقم جهت احراز):</label>
+        <input type="tel" id="reg_nid" placeholder="کد ملی معتبر" maxlength="10">
+        <div id="nid_err" class="badge badge-err">کد ملی وارد شده معتبر نیست.</div>
+      </div>
+
+      <div class="form-group">
+        <label>شماره کارت بانکی (۱۶ رقم):</label>
+        <input type="text" id="reg_card" class="card-input" placeholder="---- ---- ---- ----" maxlength="19">
+        <div id="card_bank" class="badge badge-bank"></div>
+        <div id="card_err" class="badge badge-err">شماره کارت نامعتبر است.</div>
+      </div>
+
+      <button class="btn-main" onclick="submitRegister()">تکمیل ثبت‌نام و ورود به پنل</button>
+    </div>
+
+    <div id="loginForm" style="display:none;">
+      <div class="form-group">
+        <label>شماره موبایل شما:</label>
+        <input type="tel" id="login_phone" placeholder="09xxxxxxxxx" maxlength="11">
+      </div>
+      <button class="btn-main" onclick="submitLogin()">ورود با شماره موبایل</button>
+    </div>
+  </div>
+
+  <!-- بخش داشبورد پس از ورود -->
+  <div id="dashboardSection" style="display:none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <div>
+        <h3 id="userGreeting" style="margin:0; text-align:right;">داشبورد من</h3>
+        <span id="userStatus" style="font-size:12px; color:#28a745;">● احراز هویت تایید شده</span>
+      </div>
+      <button onclick="logout()" style="width: auto; padding: 6px 12px; background: #eee; border: 1px solid #ccc; border-radius: 6px;">خروج</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tabSales" onclick="switchDashboardTab('sales')">فروش‌های من</button>
+      <button class="tab-btn" id="tabPurchases" onclick="switchDashboardTab('purchases')">خریدهای من</button>
+    </div>
+
+    <div id="salesList">
+      <div class="deal-card">
+        <div class="deal-title">اکانت بازی</div>
+        <div class="deal-meta">
+          <span>مبلغ: ۲,۰۰۰,۰۰۰ تومان</span>
+          <span class="status-pill" style="background:#eef6ff; color:#0066cc;">در انتظار خریدار</span>
+        </div>
+      </div>
+      <a href="/" style="display:block; text-align:center; padding:10px; background:#28a745; color:#fff; text-decoration:none; border-radius:8px; font-weight:bold; margin-top:10px;">+ ایجاد معامله امن جدید</a>
+    </div>
+
+    <div id="purchasesList" style="display:none;">
+      <div class="deal-card">
+        <div class="deal-title">طراحی وب‌سایت</div>
+        <div class="deal-meta">
+          <span>مبلغ: ۵,۰۰۰,۰۰۰ تومان</span>
+          <span class="status-pill" style="background:#fef3c7; color:#d97706;">وجه در امانت سایت</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ۶ رقم پیش‌شماره کارت‌های ایران
+  const cardBins = {
+    '603799': 'بانک ملی ایران', '610433': 'بانک ملت', '627353': 'بانک تجارت',
+    '603769': 'بانک صادرات', '622106': 'بانک پارسیان', '502229': 'بانک پاسارگاد',
+    '621986': 'بانک سامان', '639346': 'بانک سینا', '589210': 'بانک سپه',
+    '627412': 'بانک اقتصاد نوین', '504172': 'بانک رسالت', '606373': 'بانک مهر ایران'
+  };
+
+  // الگوریتم رسمی صحت کد ملی ایران
+  function checkNationalCode(code) {
+    if (!/^\d{10}$/.test(code)) return false;
+    const check = parseInt(code[9]);
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+      sum += parseInt(code[i]) * (10 - i);
+    }
+    const remainder = sum % 11;
+    return (remainder < 2 && check === remainder) || (remainder >= 2 && check === (11 - remainder));
+  }
+
+  // الگوریتم Luhn برای کارت بانکی
+  function checkLuhn(card) {
+    card = card.replace(/\D/g, '');
+    if (card.length !== 16) return false;
+    let sum = 0;
+    for (let i = 0; i < 16; i++) {
+      let digit = parseInt(card[i]);
+      if (i % 2 === 0) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+    }
+    return sum % 10 === 0;
+  }
+
+  // فرمت‌دهی خودکار کارت ۴ رقم ۴ رقم و نام بانک
+  document.getElementById('reg_card').addEventListener('input', function(e) {
+    let val = e.target.value.replace(/\D/g, '').substring(0, 16);
+    let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+    e.target.value = formatted;
+
+    const bin = val.substring(0, 6);
+    const bankBox = document.getElementById('card_bank');
+    const errBox = document.getElementById('card_err');
+
+    if (cardBins[bin]) {
+      bankBox.innerText = 'بانک صادرکننده: ' + cardBins[bin];
+    } else {
+      bankBox.innerText = '';
+    }
+
+    if (val.length === 16) {
+      errBox.style.display = checkLuhn(val) ? 'none' : 'block';
+    } else {
+      errBox.style.display = 'none';
+    }
+  });
+
+  // چک کردن زنده کد ملی
+  document.getElementById('reg_nid').addEventListener('input', function(e) {
+    const val = e.target.value.replace(/\D/g, '');
+    e.target.value = val;
+    const err = document.getElementById('nid_err');
+    if (val.length === 10) {
+      err.style.display = checkNationalCode(val) ? 'none' : 'block';
+    } else {
+      err.style.display = 'none';
+    }
+  });
+
+  function switchAuthTab(type) {
+    document.querySelectorAll('#authSection .tab-btn').forEach(b => b.classList.remove('active'));
+    if (type === 'register') {
+      document.querySelectorAll('#authSection .tab-btn')[0].classList.add('active');
+      document.getElementById('registerForm').style.display = 'block';
+      document.getElementById('loginForm').style.display = 'none';
+    } else {
+      document.querySelectorAll('#authSection .tab-btn')[1].classList.add('active');
+      document.getElementById('registerForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+    }
+  }
+
+  function switchDashboardTab(type) {
+    if (type === 'sales') {
+      document.getElementById('tabSales').classList.add('active');
+      document.getElementById('tabPurchases').classList.remove('active');
+      document.getElementById('salesList').style.display = 'block';
+      document.getElementById('purchasesList').style.display = 'none';
+    } else {
+      document.getElementById('tabPurchases').classList.add('active');
+      document.getElementById('tabSales').classList.remove('active');
+      document.getElementById('purchasesList').style.display = 'block';
+      document.getElementById('salesList').style.display = 'none';
+    }
+  }
+
+  function submitRegister() {
+    const name = document.getElementById('reg_name').value.trim();
+    const phone = document.getElementById('reg_phone').value.trim();
+    const nid = document.getElementById('reg_nid').value.trim();
+    const card = document.getElementById('reg_card').value.replace(/\s+/g, '');
+
+    if (!name || phone.length !== 11) {
+      alert('لطفاً نام و شماره موبایل ۱۱ رقمی را وارد کنید.');
+      return;
+    }
+    if (nid && !checkNationalCode(nid)) {
+      alert('کد ملی نامعتبر است.');
+      return;
+    }
+    if (card && !checkLuhn(card)) {
+      alert('شماره کارت ۱۶ رقمی نامعتبر است.');
+      return;
+    }
+
+    // شبیه‌سازی ورود موفق به داشبورد
+    document.getElementById('authSection').style.display = 'none';
+    document.getElementById('dashboardSection').style.display = 'block';
+    document.getElementById('userGreeting').innerText = 'سلام، ' + name;
+  }
+
+  function submitLogin() {
+    const phone = document.getElementById('login_phone').value.trim();
+    if (phone.length !== 11) {
+      alert('شماره موبایل باید ۱۱ رقم باشد.');
+      return;
+    }
+    document.getElementById('authSection').style.display = 'none';
+    document.getElementById('dashboardSection').style.display = 'block';
+    document.getElementById('userGreeting').innerText = 'حساب کاربری: ' + phone;
+  }
+
+  function logout() {
+    document.getElementById('dashboardSection').style.display = 'none';
+    document.getElementById('authSection').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
