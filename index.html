@@ -96,6 +96,7 @@
     '064': 'بانک گردشگری', '066': 'بانک دی', '069': 'بانک ایران زمین', '070': 'قرض‌الحسنه رسالت'
   };
 
+  // الگوریتم رسمی ISO 7064 با پردازش رقم‌به‌رقم و بدون باگ مرورگر
   function validateSheba(sheba) {
     sheba = sheba.replace(/\D/g, '');
     if (sheba.length !== 24) return false;
@@ -104,11 +105,11 @@
     const bban = sheba.substring(2);
     const rearranged = bban + '1827' + checkDigits;
 
-    try {
-      return BigInt(rearranged) % 97n === 1n;
-    } catch(e) {
-      return false;
+    let remainder = 0;
+    for (let i = 0; i < rearranged.length; i++) {
+      remainder = (remainder * 10 + parseInt(rearranged[i], 10)) % 97;
     }
+    return remainder === 1;
   }
 
   function validateMobile(phone) {
