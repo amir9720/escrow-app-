@@ -23,10 +23,14 @@
 <div class="card" id="content">
   <h2>در حال دریافت اطلاعات معامله...</h2>
 </div>
+  <script>
+  let urlParams = new URLSearchParams(window.location.search);
+  let dealId = urlParams.get('id');
 
-<script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const dealId = urlParams.get('id');
+  // اگر شناسه بدون مساوی یا در انتهای آدرس آمده باشد
+  if (!dealId && window.location.href.includes('?id=')) {
+    dealId = window.location.href.split('?id=')[1].split('&')[0];
+  }
 
   const statusMap = {
     'pending_payment': { text: 'در انتظار پرداخت خریدار', class: 'pending' },
@@ -35,17 +39,22 @@
   };
 
   async function loadDeal() {
-    if(!dealId) {
-      document.getElementById('content').innerHTML = '<h2>شناسه معامله نامعتبر است</h2>';
+    if(!dealId || dealId.trim() === '') {
+      document.getElementById('content').innerHTML = `
+        <h2>شناسه معامله وارد نشده است</h2>
+        <p style="text-align:center;color:#666;">لطفاً شناسه معامله را وارد کنید:</p>
+        <input type="text" id="manual_id" placeholder="مثال: deal_peczxi" style="width:100%;padding:10px;margin-bottom:10px;box-sizing:border-box;">
+        <button onclick="window.location.href='./deal.html?id=' + document.getElementById('manual_id').value.trim()">مشاهده معامله</button>
+      `;
       return;
     }
 
     try {
-      const res = await fetch(`/api/deal-info?id=${dealId}`);
+      const res = await fetch(`/api/deal-info?id=${encodeURIComponent(dealId)}`);
       const data = await res.json();
 
       if(!data.success) {
-        document.getElementById('content').innerHTML = `<h2>${data.error || 'معامله یافت نشد'}</h2>`;
+        document.getElementById('content').innerHTML = `<h2>${data.error || 'معامله پیدا نشد'}</h2><br><a href="/" style="display:block;text-align:center;">بازگشت به صفحه اصلی</a>`;
         return;
       }
 
