@@ -11,7 +11,8 @@
     input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
     button { background: #0066cc; color: #fff; font-weight: bold; border: none; cursor: pointer; margin-top: 15px; }
     button:hover { background: #0052a3; }
-    .status { margin-top: 15px; padding: 12px; background: #eef6ff; border-radius: 6px; display: none; line-height: 1.6; }
+    .status { margin-top: 15px; padding: 15px; background: #eef6ff; border-radius: 8px; display: none; line-height: 1.8; text-align: center; }
+    .deal-btn { display: inline-block; margin-top: 10px; padding: 10px 18px; background: #28a745; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -62,7 +63,11 @@
       const res = await response.json();
 
       if(res.success) {
-        box.innerHTML = `✅ معامله با موفقیت در سرور ثبت شد!<br><b>شناسه معامله:</b> ${res.dealId}<br>لینک اختصاصی ساخته شد.`;
+        box.innerHTML = `
+          ✅ <b>معامله با موفقیت ثبت شد!</b><br>
+          <b>شناسه:</b> <code>${res.dealId}</code><br><br>
+          <a class="deal-btn" href="/deal.html?id=${res.dealId}">مشاهده و صفحه پرداخت معامله</a>
+        `;
       } else {
         box.innerText = 'خطا در ثبت: ' + (res.error || 'مشکلی رخ داد');
       }
