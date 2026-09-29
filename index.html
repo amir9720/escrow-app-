@@ -8,14 +8,14 @@
     body { font-family: Tahoma, sans-serif; background: #f4f6f8; margin: 0; padding: 20px; }
     .card { max-width: 500px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     h2 { margin-top: 0; color: #222; text-align: center; }
-    .form-group { margin-bottom: 12px; text-align: right; }
-    label { font-size: 13px; color: #555; display: block; margin-bottom: 4px; font-weight: bold; }
+    .form-group { margin-bottom: 14px; text-align: right; }
+    label { font-size: 13px; color: #555; display: block; margin-bottom: 5px; font-weight: bold; }
     input, select, button { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; }
     .sheba-wrapper { position: relative; display: flex; align-items: center; }
-    .sheba-prefix { position: absolute; left: 12px; font-weight: bold; color: #555; direction: ltr; }
-    .sheba-input { text-align: left; padding-left: 40px; letter-spacing: 1px; font-family: monospace; }
-    .bank-badge { font-size: 12px; margin-top: 5px; color: #0066cc; font-weight: bold; display: none; }
-    .error-msg { font-size: 12px; color: #d9534f; margin-top: 4px; display: none; }
+    .sheba-prefix { position: absolute; left: 12px; font-weight: bold; color: #333; direction: ltr; font-size: 15px; }
+    .sheba-input { text-align: left; padding-left: 45px; letter-spacing: 1px; font-family: monospace; font-size: 15px; }
+    .bank-badge { font-size: 13px; margin-top: 6px; color: #0066cc; font-weight: bold; display: none; }
+    .error-msg { font-size: 12px; color: #d9534f; margin-top: 5px; display: none; }
     button { background: #0066cc; color: #fff; font-weight: bold; border: none; cursor: pointer; margin-top: 15px; }
     button:hover { background: #0052a3; }
     .status { margin-top: 15px; padding: 15px; background: #eef6ff; border-radius: 8px; display: none; line-height: 1.8; text-align: center; }
@@ -23,7 +23,7 @@
     
     /* مودال کد تایید */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
-    .modal-box { background: #fff; padding: 25px; border-radius: 12px; max-width: 360px; width: 90%; text-align: center; }
+    .modal-box { background: #fff; padding: 25px; border-radius: 12px; max-width: 360px; width: 90%; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
   </style>
 </head>
 <body>
@@ -33,7 +33,7 @@
   
   <div class="form-group">
     <label>عنوان معامله:</label>
-    <input type="text" id="title" placeholder="مثال: گوشی سامسونگ، طراحی لوگو">
+    <input type="text" id="title" placeholder="مثال: گوشی، طراحی سایت، اکانت بازی">
   </div>
 
   <div class="form-group">
@@ -44,23 +44,23 @@
   <div class="form-group">
     <label>شماره موبایل خریدار (۱۱ رقم):</label>
     <input type="tel" id="buyer_phone" placeholder="09xxxxxxxxx" maxlength="11">
-    <div id="buyer_err" class="error-msg">شماره موبایل باید ۱۱ رقمی باشد و با 09 شروع شود.</div>
+    <div id="buyer_err" class="error-msg">شماره موبایل خریدار باید ۱۱ رقمی و با 09 باشد.</div>
   </div>
 
   <div class="form-group">
     <label>شماره موبایل فروشنده (جهت ارسال کد تایید):</label>
     <input type="tel" id="seller_phone" placeholder="09xxxxxxxxx" maxlength="11">
-    <div id="seller_err" class="error-msg">شماره موبایل باید ۱۱ رقمی باشد و با 09 شروع شود.</div>
+    <div id="seller_err" class="error-msg">شماره موبایل فروشنده باید ۱۱ رقمی و با 09 باشد.</div>
   </div>
 
   <div class="form-group">
     <label>شماره شبای فروشنده (بدون IR):</label>
     <div class="sheba-wrapper">
       <span class="sheba-prefix">IR</span>
-      <input type="text" id="seller_sheba" class="sheba-input" placeholder="24 رقم شبا" maxlength="24">
+      <input type="text" id="seller_sheba" class="sheba-input" placeholder="24 رقم شماره شبا" maxlength="24">
     </div>
     <div id="bank_name" class="bank-badge"></div>
-    <div id="sheba_err" class="error-msg">شماره شبا نامعتبر است (کنترل رقم یا طول خطا دارد).</div>
+    <div id="sheba_err" class="error-msg">شماره شبا نامعتبر است (ارقام یا رقم کنترل اشتباه است).</div>
   </div>
   
   <div class="form-group">
@@ -76,19 +76,19 @@
   <div id="result" class="status"></div>
 </div>
 
-<!-- پنجره پاپ‌آپ کد تایید OTP -->
+<!-- مودال دریافت کد تایید OTP -->
 <div id="otpModal" class="modal">
   <div class="modal-box">
     <h3>تایید شماره موبایل</h3>
-    <p style="font-size: 13px; color: #666;" id="otpHint">کد تایید پیامک‌شده را وارد کنید:</p>
-    <input type="number" id="otpCode" placeholder="کد ۴ رقمی" style="text-align: center; letter-spacing: 5px; font-size: 18px;">
+    <p style="font-size: 13px; color: #555; line-height: 1.6;" id="otpHint">کد تایید ارسال شد.</p>
+    <input type="number" id="otpCode" placeholder="کد ۴ رقمی" style="text-align: center; letter-spacing: 6px; font-size: 20px;">
     <button onclick="confirmAndCreate()" style="background:#28a745;">تایید و نهایی‌سازی معامله</button>
-    <button onclick="closeModal()" style="background:#888; margin-top:8px;">انصراف</button>
+    <button onclick="closeModal()" style="background:#777; margin-top: 8px;">انصراف</button>
   </div>
 </div>
 
 <script>
-  // جدول کد بانک‌های ایران در شبا
+  // جدول کدهای بانک مرکزی در شماره شبا
   const bankCodes = {
     '010': 'بانک مرکزی', '011': 'بانک صنعت و معدن', '012': 'بانک ملت', '013': 'بانک رفاه کارگران',
     '014': 'بانک مسکن', '015': 'بانک سپه', '016': 'بانک کشاورزی', '017': 'بانک ملی ایران',
@@ -99,29 +99,27 @@
     '064': 'بانک گردشگری', '066': 'بانک دی', '069': 'بانک ایران زمین', '070': 'قرض‌الحسنه رسالت'
   };
 
-  // الگوریتم رسمی Mod-97 برای اعتبارسنجی شماره شبا
+  // الگوریتم رسمی ISO 7064 (MOD-97) برای شبا
   function validateSheba(sheba) {
-    sheba = sheba.replace(/\s+/g, '').toUpperCase();
-    if (sheba.startsWith('IR')) sheba = sheba.substring(2);
-    if (!/^\d{24}$/.test(sheba)) return false;
+    sheba = sheba.replace(/\D/g, '');
+    if (sheba.length !== 24) return false;
 
-    // تبدیل فرمت IR به ارقام معادل (I=18, R=27) و جابجایی
+    // چینش استاندارد: کد کشور IR معادل عددی 1827 در انتها قرار می‌گیرد
     const rearranged = sheba.substring(2) + '1827' + sheba.substring(0, 2);
     
-    // محاسبه باقیمانده تقسیم بر ۹۷ روی اعداد بزرگ
-    let remainder = 0;
-    for (let i = 0; i < rearranged.length; i++) {
-      remainder = (remainder * 10 + parseInt(rearranged[i], 10)) % 97;
+    try {
+      return BigInt(rearranged) % 97n === 1n;
+    } catch(e) {
+      return false;
     }
-    return remainder === 1;
   }
 
-  // اعتبارسنجی موبایل ایران (۱۱ رقم با 09)
+  // اعتبارسنجی فرمت شماره موبایل ایران
   function validateMobile(phone) {
-    return /^09\d{9}$/.test(phone);
+    return /^09\d{9}$/.test(phone.trim());
   }
 
-  // مانیتورینگ فیلد شبا برای تشخیص زنده نام بانک
+  // رویداد بررسی و تشخیص لحظه‌ای شبا
   document.getElementById('seller_sheba').addEventListener('input', function(e) {
     let val = e.target.value.replace(/\D/g, '');
     e.target.value = val;
@@ -188,26 +186,27 @@
 
     if (hasError) return;
 
-    // باز کردن مدال پیامک و ارسال کد تستی
-    document.getElementById('otpHint').innerText = `کد تایید برای ${seller_phone} پیامک شد (کد تستی سیستم: 1234)`;
+    // نمایش مدال تایید و راهنمای کد تست
+    document.getElementById('otpHint').innerHTML = `کد تایید به شماره <b>${seller_phone}</b> پیامک شد.<br><span style="color:#28a745;">(کد تستی سامانه: 1234)</span>`;
     document.getElementById('otpModal').style.display = 'flex';
   }
 
   function closeModal() {
     document.getElementById('otpModal').style.display = 'none';
+    document.getElementById('otpCode').value = '';
   }
 
   async function confirmAndCreate() {
     const code = document.getElementById('otpCode').value.trim();
     if (code !== '1234') {
-      alert('کد تایید اشتباه است! (برای تست، کد ۱۲۳۴ را وارد کنید)');
+      alert('کد تایید وارد شده اشتباه است! (کد تستی: ۱۲۳۴)');
       return;
     }
 
     closeModal();
     const box = document.getElementById('result');
     box.style.display = 'block';
-    box.innerText = 'احراز هویت تایید شد. در حال ثبت نهایی معامله...';
+    box.innerText = 'احراز هویت موفق بود. در حال ثبت معامله...';
 
     const payload = {
       title: document.getElementById('title').value.trim(),
@@ -229,15 +228,15 @@
       if (res.success && res.dealId) {
         const dealUrl = window.location.origin + '/deal.html#' + res.dealId;
         box.innerHTML = `
-          ✅ <b>معامله با هویت تاییدشده ثبت شد!</b><br>
-          <b>شناسه:</b> <code>${res.dealId}</code><br><br>
+          ✅ <b>معامله با موفقیت ثبت شد!</b><br>
+          <b>شناسه معامله:</b> <code>${res.dealId}</code><br><br>
           <a class="deal-btn" href="${dealUrl}">ورود به صفحه پرداخت و رهگیری معامله</a>
         `;
       } else {
         box.innerText = 'خطا در ثبت: ' + (res.error || 'مشکلی رخ داد');
       }
     } catch (e) {
-      box.innerText = 'خطا در اتصال به سرور';
+      box.innerText = 'خطا در برقراری ارتباط با سرور';
     }
   }
 </script>
