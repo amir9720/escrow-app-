@@ -2,129 +2,328 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>جزئیات معامله امن</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>رهگیری و مدیریت معامله امن</title>
   <style>
-    body { font-family: Tahoma, sans-serif; background: #f4f6f8; margin: 0; padding: 20px; }
-    .card { max-width: 500px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    h2 { margin-top: 0; color: #222; text-align: center; }
-    .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; font-size: 15px; }
-    .badge { padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
-    .pending { background: #fff3cd; color: #856404; }
-    .escrow { background: #cce5ff; color: #004085; }
-    .completed { background: #d4edda; color: #155724; }
-    button { width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
-    .btn-pay { background: #28a745; color: #fff; }
-    .btn-release { background: #0066cc; color: #fff; }
-    input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 16px; }
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 16px 12px 60px;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+    }
+    .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
+
+    .header-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #fff; padding: 14px 18px; border-radius: var(--radius);
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+    }
+    .brand { font-size: 15px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+
+    /* خط زمانی و مراحل معامله مشابه Escrow.com */
+    .stepper {
+      display: flex; justify-content: space-between; position: relative;
+      margin: 15px 0 25px; padding: 0 10px;
+    }
+    .stepper::before {
+      content: ''; position: absolute; top: 14px; left: 25px; right: 25px;
+      height: 3px; background: var(--border); z-index: 1;
+    }
+    .step { position: relative; z-index: 2; text-align: center; }
+    .step-circle {
+      width: 30px; height: 30px; border-radius: 50%; background: #fff;
+      border: 3px solid var(--border); margin: 0 auto 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: bold; color: var(--muted);
+    }
+    .step.active .step-circle { border-color: var(--primary); background: var(--primary); color: #fff; }
+    .step.done .step-circle { border-color: var(--success); background: var(--success); color: #fff; }
+    .step-text { font-size: 11px; font-weight: 700; color: var(--muted); }
+    .step.active .step-text { color: var(--primary); }
+
+    .card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border);
+    }
+
+    .deal-title { font-size: 18px; font-weight: 800; margin: 0 0 12px; text-align: center; }
+    .meta-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px;
+    }
+    .meta-row:last-child { border-bottom: none; }
+    .meta-label { color: var(--muted); }
+    .meta-val { font-weight: bold; }
+
+    .status-badge {
+      padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 800;
+    }
+    .status-held { background: #eff6ff; color: #2563eb; }
+    .status-shipped { background: #fef3c7; color: #d97706; }
+    .status-released { background: #ecfdf5; color: #059669; }
+    .status-dispute { background: #fef2f2; color: #dc2626; }
+
+    /* باکس مهلت تست کالا */
+    .inspection-box {
+      background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 12px;
+      padding: 12px; margin-top: 15px; font-size: 12px; color: #92400e; line-height: 1.6;
+    }
+
+    /* اینپوت‌ها و دکمه‌ها */
+    .field { margin: 12px 0 6px; text-align: right; }
+    .field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #334155; }
+    .field input {
+      width: 100%; padding: 12px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 14px; font-family: inherit; outline: none;
+    }
+    .field input:focus { border-color: var(--primary); }
+
+    .btn {
+      width: 100%; padding: 13px; border: none; border-radius: 10px;
+      font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: #fee2e2; color: var(--danger); border: 1px solid #fca5a5; }
+
+    .loading-msg { text-align: center; padding: 30px; color: var(--muted); font-size: 14px; }
   </style>
 </head>
 <body>
 
-<div class="card" id="content">
-  <h2 style="color: #666;">در حال بارگذاری معامله...</h2>
+<div class="container">
+  
+  <div class="header-bar">
+    <div class="brand">
+      <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+      <span>پروتکل امانی پرداخت</span>
+    </div>
+    <span id="dealIdLabel" style="font-family:monospace; font-size:12px; color:var(--muted);"></span>
+  </div>
+
+  <div id="loading" class="loading-msg">در حال دریافت وضعیت امن معامله...</div>
+
+  <div id="dealContent" style="display:none;">
+    
+    <!-- خط مراحل تراکنش (استاندارد جهانی) -->
+    <div class="stepper">
+      <div class="step done" id="step1">
+        <div class="step-circle">✓</div>
+        <div class="step-text">واریز وجه</div>
+      </div>
+      <div class="step active" id="step2">
+        <div class="step-circle">۲</div>
+        <div class="step-text">ارسال کالا</div>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-circle">۳</div>
+        <div class="step-text">مهلت تست</div>
+      </div>
+      <div class="step" id="step4">
+        <div class="step-circle">۴</div>
+        <div class="step-text">تسویه نهایی</div>
+      </div>
+    </div>
+
+    <!-- مشخصات معامله -->
+    <div class="card">
+      <h3 class="deal-title" id="dTitle">---</h3>
+      
+      <div class="meta-row">
+        <span class="meta-label">وضعیت معامله:</span>
+        <span class="status-badge" id="dStatus">---</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">مبلغ معامله:</span>
+        <span class="meta-val" id="dAmount">--- تومان</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">شماره رهگیری پستی:</span>
+        <span class="meta-val" id="dTracking" style="font-family:monospace; letter-spacing:1px;">ثبت نشده</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">مهلت بررسی و تست:</span>
+        <span class="meta-val" id="dInspection">۲۴ ساعت پس از تحویل</span>
+      </div>
+
+      <!-- باکس مهلت تست -->
+      <div class="inspection-box">
+        🛡️ <b>گارانتی سلامت و اصالت کالا:</b><br>
+        خریدار پس از تحویل بسته، مهلت تست دارد. در صورت وجود نقص، وجه بازگردانده شده و پس از پایان مهلت تست بدون اعتراض، پول به فروشنده واریز خواهد شد.
+      </div>
+
+      <!-- بخش اقدامات فروشنده: ثبت کد مرسوله پستی -->
+      <div id="sellerShippingBox" style="margin-top:15px; padding-top:15px; border-top:1px solid var(--border); display:none;">
+        <h4 style="margin:0 0 6px; font-size:14px;">پنل ارسال فروشنده</h4>
+        <div class="field">
+          <label>کد رهگیری ۲۴ رقمی پستی یا بارنامه:</label>
+          <input type="text" id="trackingInput" placeholder="کد رهگیری پست پیشتاز / تیپاکس">
+        </div>
+        <button class="btn btn-primary" onclick="submitShipping()">ثبت ارسال و شروع مهلت تست</button>
+      </div>
+
+      <!-- بخش اقدامات خریدار: تایید یا ثبت شکایت داوری -->
+      <div id="buyerActionsBox" style="margin-top:15px; padding-top:15px; border-top:1px solid var(--border);">
+        <button class="btn btn-success" onclick="releasePayment()">تایید تحویل و رضایت (آزادسازی وجه به فروشنده)</button>
+        <button class="btn btn-danger" onclick="openDispute()">ثبت گزارش مغایرت یا عدم دریافت کالا</button>
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
 
 <script>
-  // استخراج هوشمند شناسه معامله از هر کجای آدرس
-  function getDealId() {
-    // ۱. بررسی کوئری استرینگ معمولی
-    const params = new URLSearchParams(window.location.search);
-    let id = params.get('id');
-    if (id && id.trim()) return id.trim();
-
-    // ۲. بررسی حالت هش (deal.html#deal_xxxx)
-    if (window.location.hash) {
-      const hash = window.location.hash.replace('#', '').trim();
-      if (hash) return hash;
-    }
-
-    // ۳. بررسی متن کل آدرس برای پیدا کردن deal_
-    const fullUrl = window.location.href;
-    const match = fullUrl.match(/deal_[a-z0-9]+/i);
-    if (match) return match[0];
-
-    return null;
-  }
-
-  const statusMap = {
-    'pending_payment': { text: 'در انتظار پرداخت خریدار', class: 'pending' },
-    'in_escrow': { text: 'وجه در امانت سایت (آماده تحویل کالا)', class: 'escrow' },
-    'completed': { text: 'معامله با موفقیت انجام و تسویه شد', class: 'completed' }
-  };
+  const dealId = window.location.hash.replace('#', '') || 'deal_brlp9u';
+  let currentDeal = null;
 
   async function loadDeal() {
-    const dealId = getDealId();
+    try {
+      const res = await fetch(`/api/deals?id=${dealId}`);
+      const data = await res.json();
+      if (!data || data.error) {
+        document.getElementById('loading').innerText = 'معامله‌ای با این شناسه یافت نشد.';
+        return;
+      }
 
-    if (!dealId) {
-      document.getElementById('content').innerHTML = `
-        <h2>شناسه معامله یافت نشد</h2>
-        <p style="text-align:center;color:#666;font-size:14px;">لطفاً شناسه معامله خود را وارد کنید:</p>
-        <input type="text" id="manual_id" placeholder="مثال: deal_peczxi">
-        <button class="btn-release" onclick="submitManualId()">مشاهده جزئیات معامله</button>
-        <br><br>
-        <a href="/" style="display:block;text-align:center;color:#0066cc;text-decoration:none;">بازگشت به صفحه اصلی</a>
-      `;
+      currentDeal = data;
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('dealContent').style.display = 'block';
+
+      document.getElementById('dealIdLabel').innerText = '#' + currentDeal.id;
+      document.getElementById('dTitle').innerText = currentDeal.title;
+      document.getElementById('dAmount').innerText = Number(currentDeal.amount).toLocaleString('fa-IR') + ' تومان';
+      
+      updateStatusUI(currentDeal.status || 'held', currentDeal.tracking_code);
+    } catch (e) {
+      document.getElementById('loading').innerText = 'خطا در بارگذاری اطلاعات معامله.';
+    }
+  }
+
+  function updateStatusUI(status, tracking) {
+    const statusEl = document.getElementById('dStatus');
+    const trackingEl = document.getElementById('dTracking');
+    const shippingBox = document.getElementById('sellerShippingBox');
+
+    if (tracking) {
+      trackingEl.innerText = tracking;
+    }
+
+    if (status === 'shipped') {
+      statusEl.className = 'status-badge status-shipped';
+      statusEl.innerText = 'کالا ارسال شده (در مهلت تست خریدار)';
+      document.getElementById('step2').className = 'step done';
+      document.getElementById('step3').className = 'step active';
+      shippingBox.style.display = 'none';
+    } else if (status === 'released') {
+      statusEl.className = 'status-badge status-released';
+      statusEl.innerText = 'معامله خاتمه یافت (وجه به فروشنده تسویه شد)';
+      document.getElementById('step2').className = 'step done';
+      document.getElementById('step3').className = 'step done';
+      document.getElementById('step4').className = 'step done';
+      document.getElementById('buyerActionsBox').style.display = 'none';
+      shippingBox.style.display = 'none';
+    } else if (status === 'dispute') {
+      statusEl.className = 'status-badge status-dispute';
+      statusEl.innerText = 'مورد اختلاف (وجه تا بررسی داوری مسدود شد)';
+      document.getElementById('buyerActionsBox').style.display = 'none';
+      shippingBox.style.display = 'none';
+    } else {
+      // حالت پیش‌فرض: وجه امانت شده
+      statusEl.className = 'status-badge status-held';
+      statusEl.innerText = 'وجه در حساب امن سایت (منتظر ارسال توسط فروشنده)';
+      shippingBox.style.display = 'block';
+    }
+  }
+
+  // ثبت کد رهگیری توسط فروشنده
+  async function submitShipping() {
+    const code = document.getElementById('trackingInput').value.trim();
+    if (!code) {
+      alert('لطفاً شماره رهگیری پستی را وارد کنید.');
       return;
     }
 
     try {
-      const res = await fetch('/api/deal-info?id=' + encodeURIComponent(dealId));
-      const data = await res.json();
-
-      if (!data.success || !data.deal) {
-        document.getElementById('content').innerHTML = `
-          <h2 style="color:#d9534f;">معامله‌ای با این شناسه یافت نشد</h2>
-          <p style="text-align:center;color:#777;">شناسه بررسی شده: <code>${dealId}</code></p>
-          <a href="/" style="display:block;text-align:center;margin-top:15px;color:#0066cc;text-decoration:none;">بازگشت به صفحه اصلی</a>
-        `;
-        return;
-      }
-
-      const d = data.deal;
-      const st = statusMap[d.status] || { text: d.status, class: 'pending' };
-
-      document.getElementById('content').innerHTML = `
-        <h2>${d.title}</h2>
-        <div class="row"><span>وضعیت:</span><span class="badge ${st.class}">${st.text}</span></div>
-        <div class="row"><span>مبلغ معامله:</span><b>${Number(d.amount).toLocaleString('fa-IR')} تومان</b></div>
-        <div class="row"><span>پرداخت‌کننده کارمزد:</span><span>${d.fee_payer === 'buyer' ? 'خریدار' : (d.fee_payer === 'seller' ? 'فروشنده' : 'بالمناصفه')}</span></div>
-        <div class="row"><span>شناسه معامله:</span><code>${d.id}</code></div>
-        
-        ${d.status === 'pending_payment' ? `<button class="btn-pay" onclick="payDeal('${d.id}')">💳 پرداخت آنلاین (انتقال وجه به امانت سایت)</button>` : ''}
-        ${d.status === 'in_escrow' ? `<button class="btn-release" onclick="completeDeal('${d.id}')">✅ تایید تحویل و آزادسازی وجه به فروشنده</button>` : ''}
-        ${d.status === 'completed' ? `<div style="text-align:center;color:#28a745;font-weight:bold;margin-top:15px;">این معامله با موفقیت به پایان رسیده است.</div>` : ''}
-      `;
-    } catch(e) {
-      document.getElementById('content').innerHTML = '<h2 style="color:#d9534f;">خطا در برقراری ارتباط با دیتابیس</h2>';
-    }
-  }
-
-  function submitManualId() {
-    const val = document.getElementById('manual_id').value.trim();
-    if (val) {
-      window.location.href = './deal.html#' + val;
-      location.reload();
-    }
-  }
-
-  async function payDeal(id) {
-    await fetch('/api/deal-action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, action: 'pay' })
-    });
-    location.reload();
-  }
-
-  async function completeDeal(id) {
-    if (confirm('آیا دریافت کامل کالا یا خدمات را تایید می‌کنید؟ با تایید شما وجه برای فروشنده آزاد می‌شود.')) {
-      await fetch('/api/deal-action', {
-        method: 'POST',
+      const res = await fetch('/api/deals', {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, action: 'complete' })
+        body: JSON.stringify({ id: dealId, action: 'ship', tracking_code: code })
       });
-      location.reload();
+      const data = await res.json();
+      if (data.success) {
+        alert('کد مرسوله ثبت شد و وضعیت معامله به «ارسال‌شده» تغییر یافت.');
+        location.reload();
+      } else {
+        alert('خطا در ثبت: ' + (data.error || 'مشکلی رخ داد'));
+      }
+    } catch(e) {
+      alert('خطا در برقراری ارتباط با سرور.');
+    }
+  }
+
+  // آزادسازی وجه توسط خریدار
+  async function releasePayment() {
+    if (!confirm('آیا کالا را سالم تحویل گرفتید و آزادسازی مبلغ به حساب فروشنده را تایید می‌کنید؟')) return;
+
+    try {
+      const res = await fetch('/api/deals', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: dealId, action: 'release' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('وجه با موفقیت به شماره شبای فروشنده حواله شد.');
+        location.reload();
+      } else {
+        alert('خطا در تغییر وضعیت: ' + (data.error || ''));
+      }
+    } catch(e) {
+      alert('خطا در ارتباط با سرور.');
+    }
+  }
+
+  // ثبت اختلاف و ارجاع به داوری
+  async function openDispute() {
+    const reason = prompt('لطفاً دلیل اعلام مغایرت یا مشکل کالا را وارد کنید:');
+    if (!reason) return;
+
+    try {
+      const res = await fetch('/api/deals', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: dealId, action: 'dispute', reason: reason })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('گزارش اختلاف ثبت شد. وجه تا بررسی کارشناس مسدود خواهد ماند.');
+        location.reload();
+      } else {
+        alert('خطا: ' + (data.error || ''));
+      }
+    } catch(e) {
+      alert('خطا در ثبت درخواست داوری.');
     }
   }
 
