@@ -62,7 +62,6 @@
       border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
 
-    /* سوئیچر نوع دریافت وجه (کارت یا شبا) */
     .payout-tabs { display: flex; gap: 8px; margin-bottom: 10px; }
     .payout-tab {
       flex: 1; padding: 10px 8px; border: 1.5px solid var(--border); border-radius: 8px;
@@ -100,7 +99,6 @@
       color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;
     }
 
-    /* پاپ‌آپ کد پیامکی */
     .modal { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 100; }
     .modal-card { background: #fff; padding: 25px; border-radius: var(--radius); max-width: 360px; width: 90%; text-align: center; box-shadow: var(--shadow); }
   </style>
@@ -145,7 +143,6 @@
       <span id="seller_err" class="badge-info err-msg">شماره موبایل فروشنده باید ۱۱ رقمی باشد.</span>
     </div>
 
-    <!-- انتخاب بین شماره کارت و شبا -->
     <div class="field">
       <label>روش تسویه و دریافت وجه فروشنده:</label>
       <div class="payout-tabs">
@@ -250,7 +247,6 @@
     }
   }
 
-  // فرمت ۴ رقمی کارت و نمایش بانک
   document.getElementById('seller_card').addEventListener('input', function(e) {
     let val = e.target.value.replace(/\D/g, '').substring(0, 16);
     e.target.value = val.match(/.{1,4}/g)?.join(' ') || val;
@@ -259,7 +255,6 @@
     document.getElementById('card_err').style.display = (val.length === 16 && !checkLuhn(val)) ? 'block' : 'none';
   });
 
-  // مانیتورینگ شبا
   document.getElementById('seller_sheba').addEventListener('input', function(e) {
     let val = e.target.value.replace(/\D/g, '');
     e.target.value = val;
@@ -299,7 +294,6 @@
 
     activePhoneForOtp = seller_phone;
 
-    // ارسال درخواست کد به سرویس پیامک
     try {
       const res = await fetch('/api/otp', {
         method: 'POST',
@@ -309,11 +303,7 @@
       const data = await res.json();
 
       if (data.success) {
-        let hint = `کد تایید ۴ رقمی به شماره <b>${seller_phone}</b> ارسال شد (مهلت: ۲ دقیقه).`;
-        if (data.debug_code) {
-          hint += `<br><span style="color:#2563eb; font-weight:bold;">کد پیامک‌شده: ${data.debug_code}</span>`;
-        }
-        document.getElementById('otpHint').innerHTML = hint;
+        document.getElementById('otpHint').innerHTML = `کد تایید ۴ رقمی به شماره <b>${seller_phone}</b> پیامک شد.<br><span style="color:#64748b; font-size:11px;">لطفاً کد دریافتی را وارد کنید (مهلت: ۲ دقیقه).</span>`;
         document.getElementById('otpModal').style.display = 'flex';
       } else {
         alert('خطا در ارسال کد: ' + (data.error || 'مشکلی رخ داد'));
@@ -335,7 +325,6 @@
       return;
     }
 
-    // تایید اعتبار کد پیامک با سرور
     try {
       const verifyRes = await fetch('/api/otp', {
         method: 'PUT',
