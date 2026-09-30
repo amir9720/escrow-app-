@@ -32,52 +32,48 @@
     .container { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 16px; }
     
     .brand-card {
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: var(--shadow);
+      background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow);
     }
     .brand-title { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 16px; color: var(--primary); }
     .brand-logo {
-      width: 38px; height: 38px;
-      background: linear-gradient(135deg, var(--primary), #3b82f6);
-      color: #fff; border-radius: 10px;
-      display: grid; place-items: center;
+      width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), #3b82f6);
+      color: #fff; border-radius: 10px; display: grid; place-items: center;
     }
     .panel-link {
-      font-size: 12px; font-weight: bold; color: var(--primary);
-      text-decoration: none; background: var(--primary-light);
-      padding: 6px 12px; border-radius: 8px;
+      font-size: 12px; font-weight: bold; color: var(--primary); text-decoration: none;
+      background: var(--primary-light); padding: 6px 12px; border-radius: 8px;
     }
 
     .form-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px 20px;
-      box-shadow: var(--shadow);
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 24px 20px; box-shadow: var(--shadow);
     }
     h2 { font-size: 18px; margin: 0 0 6px; text-align: center; }
-    .sub-head { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 22px; }
+    .sub-head { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 20px; }
 
     .field { margin-bottom: 14px; text-align: right; }
     .field label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; }
     .field input, .field select {
       width: 100%; padding: 13px 14px; border: 1.5px solid var(--border);
-      border-radius: 10px; font-size: 14px; font-family: inherit;
-      outline: none; background: #f8fafc; transition: all 0.2s;
+      border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; background: #f8fafc;
     }
     .field input:focus, .field select:focus {
       border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
 
+    /* سوئیچر نوع حساب (کارت یا شبا) */
+    .payout-tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+    .payout-tab {
+      flex: 1; padding: 8px; border: 1.5px solid var(--border); border-radius: 8px;
+      background: #f8fafc; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center;
+    }
+    .payout-tab.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+
     .sheba-box { position: relative; display: flex; align-items: center; }
     .sheba-prefix { position: absolute; left: 14px; font-weight: 800; color: #64748b; direction: ltr; font-size: 15px; }
     .sheba-input { direction: ltr; text-align: left; padding-left: 45px !important; letter-spacing: 1px; font-family: monospace; font-size: 15px; }
+    .card-input { direction: ltr; text-align: center; letter-spacing: 2px; font-family: monospace; font-size: 15px; }
 
     .badge-info { font-size: 11px; font-weight: 700; margin-top: 5px; display: block; }
     .bank-name { color: var(--primary); }
@@ -87,27 +83,20 @@
       width: 100%; padding: 14px; background: var(--primary); color: #fff;
       font-weight: 800; font-size: 15px; border: none; border-radius: 12px;
       cursor: pointer; font-family: inherit; margin-top: 10px;
-      transition: background 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.25);
     }
-    .btn-submit:hover { background: var(--primary-hover); }
-
     .trust-box {
       margin-top: 15px; padding: 12px; background: var(--primary-light);
       border-radius: 10px; display: flex; align-items: center; gap: 10px; font-size: 11px; color: #1e40af; line-height: 1.5;
     }
-
     .result-box {
       margin-top: 16px; padding: 16px; border-radius: 12px;
-      background: #ecfdf5; border: 1px solid #a7f3d0; text-align: center;
-      line-height: 1.8; display: none;
+      background: #ecfdf5; border: 1px solid #a7f3d0; text-align: center; line-height: 1.8; display: none;
     }
     .deal-link-btn {
-      display: block; margin-top: 10px; padding: 12px;
-      background: var(--success); color: #fff; text-decoration: none;
-      border-radius: 10px; font-weight: bold; font-size: 13px;
+      display: block; margin-top: 10px; padding: 12px; background: var(--success);
+      color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;
     }
 
-    /* مودال کد تایید */
     .modal { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 100; }
     .modal-card { background: #fff; padding: 25px; border-radius: var(--radius); max-width: 360px; width: 90%; text-align: center; box-shadow: var(--shadow); }
   </style>
@@ -128,11 +117,11 @@
 
   <div class="form-card">
     <h2>ایجاد لینک اختصاصی معامله</h2>
-    <div class="sub-head">وجه خریدار تا زمان تایید تحویل کالا به امانت نگهداری می‌شود</div>
+    <div class="sub-head">تسویه حساب تنها پس از تحویل سالم کالا و اتمام مهلت تست</div>
 
     <div class="field">
       <label>عنوان کالا، خدمت یا سفارش:</label>
-      <input type="text" id="title" placeholder="مثال: گوشی آیفون ۱۳، کفش اسپرت، طراحی بنر">
+      <input type="text" id="title" placeholder="مثال: گوشی، طراحی سایت، پوشاک">
     </div>
 
     <div class="field">
@@ -143,23 +132,37 @@
     <div class="field">
       <label>شماره موبایل خریدار (۱۱ رقم):</label>
       <input type="tel" id="buyer_phone" placeholder="09xxxxxxxxx" maxlength="11">
-      <span id="buyer_err" class="badge-info err-msg">شماره موبایل خریدار باید ۱۱ رقمی و با 09 باشد.</span>
+      <span id="buyer_err" class="badge-info err-msg">شماره موبایل خریدار باید ۱۱ رقمی باشد.</span>
     </div>
 
     <div class="field">
-      <label>شماره موبایل فروشنده (جهت ارسال کد تایید):</label>
+      <label>شماره موبایل فروشنده (دریافت کد تایید):</label>
       <input type="tel" id="seller_phone" placeholder="09xxxxxxxxx" maxlength="11">
-      <span id="seller_err" class="badge-info err-msg">شماره موبایل فروشنده باید ۱۱ رقمی و با 09 باشد.</span>
+      <span id="seller_err" class="badge-info err-msg">شماره موبایل فروشنده باید ۱۱ رقمی باشد.</span>
     </div>
 
+    <!-- انتخاب بین کارت بانکی و شبا -->
     <div class="field">
-      <label>شماره شبای فروشنده (بدون IR):</label>
-      <div class="sheba-box">
-        <span class="sheba-prefix">IR</span>
-        <input type="text" id="seller_sheba" class="sheba-input" placeholder="24 رقم شبا" maxlength="24">
+      <label>روش دریافت وجه توسط فروشنده:</label>
+      <div class="payout-tabs">
+        <div id="tabCard" class="payout-tab active" onclick="switchPayout('card')">شماره کارت (۱۶ رقم)</div>
+        <div id="tabSheba" class="payout-tab" onclick="switchPayout('sheba')">شماره شبا (۲۴ رقم)</div>
       </div>
-      <span id="bank_badge" class="badge-info bank-name"></span>
-      <span id="sheba_err" class="badge-info err-msg">شماره شبا باید ۲۴ رقم معتبر بانکی باشد.</span>
+
+      <div id="boxCard">
+        <input type="text" id="seller_card" class="card-input" placeholder="---- ---- ---- ----" maxlength="19">
+        <span id="card_bank_badge" class="badge-info bank-name"></span>
+        <span id="card_err" class="badge-info err-msg">شماره کارت ۱۶ رقمی نامعتبر است.</span>
+      </div>
+
+      <div id="boxSheba" style="display:none;">
+        <div class="sheba-box">
+          <span class="sheba-prefix">IR</span>
+          <input type="text" id="seller_sheba" class="sheba-input" placeholder="24 رقم شبا بدون IR" maxlength="24">
+        </div>
+        <span id="sheba_bank_badge" class="badge-info bank-name"></span>
+        <span id="sheba_err" class="badge-info err-msg">شماره شبا نامعتبر است.</span>
+      </div>
     </div>
 
     <div class="field">
@@ -171,11 +174,11 @@
       </select>
     </div>
 
-    <button class="btn-submit" onclick="startVerification()">احراز هویت و دریافت لینک معامله</button>
+    <button class="btn-submit" onclick="startVerification()">احراز هویت و صدور لینک معامله</button>
 
     <div class="trust-box">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/></svg>
-      <span>تسویه حساب تضمینی پس از تحویل کالا مستقیماً به شبای تاییدشده بانکی واریز می‌گردد.</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/></svg>
+      <span>وجه واریزی تا زمان تایید تحویل در حساب امانی مسدود می‌‌ماند.</span>
     </div>
 
     <div id="result" class="result-box"></div>
@@ -189,47 +192,75 @@
     <h3 style="margin-top:0;">تایید شماره موبایل</h3>
     <p style="font-size:13px; color:var(--muted); line-height:1.6;" id="otpHint"></p>
     <input type="number" id="otpCode" placeholder="کد ۴ رقمی" style="width:100%; padding:12px; text-align:center; font-size:22px; letter-spacing:8px; border-radius:10px; border:1px solid var(--border); margin-bottom:12px;">
-    <button class="btn-submit" style="background:var(--success);" onclick="confirmAndCreate()">تایید و صدور لینک معامله</button>
-    <button class="btn-submit" style="background:#e2e8f0; color:#334155; margin-top:8px; box-shadow:none;" onclick="closeModal()">انصراف</button>
+    <button class="btn-submit" style="background:var(--success);" onclick="confirmAndCreate()">تایید و ایجاد لینک</button>
+    <button class="btn-submit" style="background:#e2e8f0; color:#334155; margin-top:8px;" onclick="closeModal()">انصراف</button>
   </div>
 </div>
 
 <script>
+  let payoutMode = 'card';
+
+  const cardBins = {
+    '603799': 'بانک ملی', '610433': 'بانک ملت', '627353': 'بانک تجارت',
+    '603769': 'بانک صادرات', '622106': 'بانک پارسیان', '502229': 'بانک پاسارگاد',
+    '621986': 'بانک سامان', '589210': 'بانک سپه', '504172': 'بانک رسالت', '606373': 'مهر ایران'
+  };
+
   const bankCodes = {
     '010': 'بانک مرکزی', '011': 'بانک صنعت و معدن', '012': 'بانک ملت', '013': 'بانک رفاه کارگران',
     '014': 'بانک مسکن', '015': 'بانک سپه', '016': 'بانک کشاورزی', '017': 'بانک ملی ایران',
-    '018': 'بانک تجارت', '019': 'بانک صادرات ایران', '020': 'بانک توسعه صادرات', '021': 'پست بانک ایران',
-    '022': 'بانک توسعه تعاون', '051': 'موسسه اعتباری نور', '053': 'بانک کارآفرین', '054': 'بانک پارسیان',
-    '055': 'بانک اقتصاد نوین', '056': 'بانک سامان', '057': 'بانک پاسارگاد', '058': 'بانک سرمایه',
-    '059': 'بانک سینا', '060': 'قرض‌الحسنه مهر ایران', '061': 'بانک شهر', '062': 'بانک آینده',
-    '064': 'بانک گردشگری', '066': 'بانک دی', '069': 'بانک ایران زمین', '070': 'قرض‌الحسنه رسالت'
+    '018': 'بانک تجارت', '019': 'بانک صادرات ایران', '054': 'بانک پارسیان', '057': 'بانک پاسارگاد',
+    '056': 'بانک سامان', '070': 'قرض‌الحسنه رسالت', '060': 'قرض‌الحسنه مهر ایران'
   };
 
-  function validateSheba(sheba) {
-    sheba = sheba.replace(/\D/g, '');
-    if (sheba.length !== 24) return false;
-    const bankCode = sheba.substring(2, 5);
-    return !!bankCodes[bankCode];
+  function checkLuhn(card) {
+    card = card.replace(/\D/g, '');
+    if (card.length !== 16) return false;
+    let sum = 0;
+    for (let i = 0; i < 16; i++) {
+      let d = parseInt(card[i]);
+      if (i % 2 === 0) {
+        d *= 2;
+        if (d > 9) d -= 9;
+      }
+      sum += d;
+    }
+    return sum % 10 === 0;
   }
 
-  function validateMobile(phone) {
-    return /^09\d{9}$/.test(phone.trim());
+  function validateMobile(p) { return /^09\d{9}$/.test(p.trim()); }
+
+  function switchPayout(mode) {
+    payoutMode = mode;
+    if (mode === 'card') {
+      document.getElementById('tabCard').classList.add('active');
+      document.getElementById('tabSheba').classList.remove('active');
+      document.getElementById('boxCard').style.display = 'block';
+      document.getElementById('boxSheba').style.display = 'none';
+    } else {
+      document.getElementById('tabSheba').classList.add('active');
+      document.getElementById('tabCard').classList.remove('active');
+      document.getElementById('boxSheba').style.display = 'block';
+      document.getElementById('boxCard').style.display = 'none';
+    }
   }
 
+  // مانیتورینگ زنده کارت بانکی
+  document.getElementById('seller_card').addEventListener('input', function(e) {
+    let val = e.target.value.replace(/\D/g, '').substring(0, 16);
+    e.target.value = val.match(/.{1,4}/g)?.join(' ') || val;
+    const bin = val.substring(0, 6);
+    document.getElementById('card_bank_badge').innerText = cardBins[bin] ? ('بانک: ' + cardBins[bin]) : '';
+    document.getElementById('card_err').style.display = (val.length === 16 && !checkLuhn(val)) ? 'block' : 'none';
+  });
+
+  // مانیتورینگ زنده شبا
   document.getElementById('seller_sheba').addEventListener('input', function(e) {
     let val = e.target.value.replace(/\D/g, '');
     e.target.value = val;
-    const badge = document.getElementById('bank_badge');
-    const err = document.getElementById('sheba_err');
-
-    if (val.length >= 5) {
-      const code = val.substring(2, 5);
-      badge.innerText = bankCodes[code] ? ('تشخیص بانک: ' + bankCodes[code]) : '';
-    } else {
-      badge.innerText = '';
-    }
-
-    err.style.display = (val.length === 24 && !validateSheba(val)) ? 'block' : 'none';
+    const code = val.substring(2, 5);
+    document.getElementById('sheba_bank_badge').innerText = bankCodes[code] ? ('بانک: ' + bankCodes[code]) : '';
+    document.getElementById('sheba_err').style.display = (val.length === 24 && !bankCodes[code]) ? 'block' : 'none';
   });
 
   function startVerification() {
@@ -237,7 +268,6 @@
     const amount = document.getElementById('amount').value.trim();
     const buyer_phone = document.getElementById('buyer_phone').value.trim();
     const seller_phone = document.getElementById('seller_phone').value.trim();
-    const seller_sheba = document.getElementById('seller_sheba').value.trim();
 
     if (!title || !amount) {
       alert('لطفاً عنوان و مبلغ معامله را وارد کنید.');
@@ -246,15 +276,23 @@
 
     const buyerValid = validateMobile(buyer_phone);
     const sellerValid = validateMobile(seller_phone);
-    const shebaValid = validateSheba(seller_sheba);
-
     document.getElementById('buyer_err').style.display = buyerValid ? 'none' : 'block';
     document.getElementById('seller_err').style.display = sellerValid ? 'none' : 'block';
-    document.getElementById('sheba_err').style.display = shebaValid ? 'none' : 'block';
 
-    if (!buyerValid || !sellerValid || !shebaValid) return;
+    let payoutValid = false;
+    if (payoutMode === 'card') {
+      const card = document.getElementById('seller_card').value.replace(/\s+/g, '');
+      payoutValid = (card.length === 16 && checkLuhn(card));
+      document.getElementById('card_err').style.display = payoutValid ? 'none' : 'block';
+    } else {
+      const sheba = document.getElementById('seller_sheba').value.trim();
+      payoutValid = (sheba.length === 24);
+      document.getElementById('sheba_err').style.display = payoutValid ? 'none' : 'block';
+    }
 
-    document.getElementById('otpHint').innerHTML = `کد تایید برای <b>${seller_phone}</b> ارسال شد.<br><span style="color:var(--success);">(کد تست سامانه: 1234)</span>`;
+    if (!buyerValid || !sellerValid || !payoutValid) return;
+
+    document.getElementById('otpHint').innerHTML = `کد تایید به شماره <b>${seller_phone}</b> پیامک شد.<br><span style="color:var(--success);">(کد تستی سامانه: 1234)</span>`;
     document.getElementById('otpModal').style.display = 'flex';
   }
 
@@ -266,44 +304,46 @@
   async function confirmAndCreate() {
     const code = document.getElementById('otpCode').value.trim();
     if (code !== '1234') {
-      alert('کد تایید وارد شده اشتباه است.');
+      alert('کد تایید اشتباه است.');
       return;
     }
 
     closeModal();
     const box = document.getElementById('result');
     box.style.display = 'block';
-    box.innerText = 'هویت تایید شد. در حال صدور لینک اختصاصی معامله...';
+    box.innerText = 'هویت تایید شد. در حال صدور لینک معامله...';
+
+    const accountVal = payoutMode === 'card' 
+      ? document.getElementById('seller_card').value.replace(/\s+/g, '')
+      : ('IR' + document.getElementById('seller_sheba').value.trim());
 
     const payload = {
       title: document.getElementById('title').value.trim(),
       amount: document.getElementById('amount').value.trim(),
       buyer_phone: document.getElementById('buyer_phone').value.trim(),
       seller_phone: document.getElementById('seller_phone').value.trim(),
-      seller_sheba: 'IR' + document.getElementById('seller_sheba').value.trim(),
+      seller_sheba: accountVal,
       fee_payer: document.getElementById('fee_payer').value
     };
 
     try {
-      const response = await fetch('/api/deals', {
+      const res = await fetch('/api/deals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      const res = await response.json();
-
-      if (res.success && res.dealId) {
-        const dealUrl = window.location.origin + '/deal.html#' + res.dealId;
+      const data = await res.json();
+      if (data.success && data.dealId) {
+        const dealUrl = window.location.origin + '/deal.html#' + data.dealId;
         box.innerHTML = `
-          ✅ <b>لینک اختصاصی معامله شما با موفقیت صادر شد!</b><br>
-          <span style="font-size:12px; color:#555;">این لینک را برای خریدار بفرستید تا وجه در حساب امن واریز شود:</span><br>
-          <a class="deal-link-btn" href="${dealUrl}">مشاهده و کپی لینک پرداخت خریدار</a>
+          ✅ <b>لینک معامله اختصاصی صادر شد!</b><br>
+          <a class="deal-link-btn" href="${dealUrl}">ورود و کپی لینک پرداخت خریدار</a>
         `;
       } else {
-        box.innerText = 'خطا در ثبت: ' + (res.error || 'مشکلی رخ داد');
+        box.innerText = 'خطا در ثبت: ' + (data.error || '');
       }
     } catch (e) {
-      box.innerText = 'خطا در برقراری ارتباط با سرور';
+      box.innerText = 'خطا در برقراری ارتباط با سرور.';
     }
   }
 </script>
