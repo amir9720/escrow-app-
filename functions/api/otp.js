@@ -8,9 +8,9 @@ export async function onRequestPost({ request, env }) {
 
     // تولید کد تصادفی ۴ رقمی
     const code = Math.floor(1000 + Math.random() * 9000).toString();
-    const expiresAt = Date.now() + (2 * 60 * 1000); // انقضا: ۲ دقیقه بعد
+    const expiresAt = Date.now() + (2 * 60 * 1000); // انقضا: ۲ دقیقه
 
-    // ذخیره در جدول otp_codes دیتابیس D1
+    // ذخیره در جدول otp_codes در دیتابیس D1
     await env.DB.prepare(`
       INSERT INTO otp_codes (phone, code, expires_at)
       VALUES (?, ?, ?)
@@ -19,22 +19,20 @@ export async function onRequestPost({ request, env }) {
         expires_at = excluded.expires_at
     `).bind(phone, code, expiresAt).run();
 
-    // اگر کلید کاوه‌نگار در متغیرهای کلودفلر ست شده باشد پیامک واقعی ارسال می‌شود:
-    // (env.KAVENEGAR_API_KEY)
+    // ارسال واقعی از طریق کاوه‌نگار (در صورت وجود کلید در متغیرهای کلودفلر)
     if (env.KAVENEGAR_API_KEY) {
       try {
         const kavenegarUrl = `https://api.kavenegar.com/v1/${env.KAVENEGAR_API_KEY}/verify/lookup.json?receptor=${phone}&token=${code}&template=verify`;
         await fetch(kavenegarUrl);
       } catch (err) {
-        console.error('SMS Send Error:', err);
+        console.error('Kavenegar SMS Error:', err);
       }
     }
 
+    // پاسخ امن: هرگز کد در خروجی ارسال نمی‌شود
     return new Response(JSON.stringify({
       success: true,
-      message: 'کد تایید ارسال شد',
-      // در صورت نبود پنل پیامکی، برای راحتی تست کد در خروجی کنسول مرورگر نمایش داده می‌شود:
-      debug_code: env.KAVENEGAR_API_KEY ? undefined : code
+      message: 'کد تایید با موفقیت ارسال شد'
     }), {
       headers: { 'Content-Type': 'application/json' }
     });
@@ -61,14 +59,14 @@ export async function onRequestPut({ request, env }) {
     }
 
     if (Date.now() > record.expires_at) {
-      return new Response(JSON.stringify({ success: false, error: 'کد تایید منقضی شده است. مجدداً درخواست دهید' }), { status: 400 });
+      return new Response(JSON.stringify({ success: false, error: 'کد تایید منقضی شده است. لطفاً مجدداً درخواست دهید' }), { status: 400 });
     }
 
     if (record.code !== code.trim()) {
       return new Response(JSON.stringify({ success: false, error: 'کد تایید وارد شده اشتباه است' }), { status: 400 });
     }
 
-    // پس از یک بار تایید موفق، رکورد حذف می‌شود تا قابل سوءاستفاده مجدد نباشد
+    // حذف رکورد پس از مصرف موفق جهت جلوگیری از استفاده مجدد
     await env.DB.prepare('DELETE FROM otp_codes WHERE phone = ?').bind(phone).run();
 
     return new Response(JSON.stringify({ success: true, verified: true }), {
