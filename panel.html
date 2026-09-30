@@ -192,11 +192,7 @@
 
     <div id="viewActivity">
       <div id="sellerActions">
-        <div id="storeBioBox" style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:14px; margin-bottom:15px; text-align:right;">
-          <b style="color:#1e40af; font-size:13px;">🔗 لینک اختصاصی شما برای بیو اینستاگرام:</b>
-          <input type="text" id="storeBioInput" readonly style="margin-top:8px; direction:ltr; text-align:left; font-size:12px; background:#fff; width:100%; padding:8px; border:1px solid #bfdbfe; border-radius:8px;" onclick="this.select()">
-          <small style="color:#64748b; display:block; margin-top:5px;">این لینک را کپی کرده و در بایو پیج خود بگذارید تا خریداران از این درگاه خرید کنند.</small>
-        </div>
+        <div id="storeBioBox"></div>
         <a href="/" class="btn btn-accent" style="display:block; text-align:center; text-decoration:none; margin-bottom:14px;">+ ایجاد لینک معامله امن جدید</a>
         <div id="sellerDealsList" style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:15px; font-size:13px; text-align:center; color:var(--muted);">
           در حال بررسی سفارش‌های ثبت‌شده...
@@ -256,7 +252,7 @@
   const cardBins = {
     '603799': 'بانک ملی', '610433': 'بانک ملت', '627353': 'بانک تجارت',
     '603769': 'بانک صادرات', '622106': 'بانک پارسیان', '502229': 'بانک پاسارگاد',
-    '621986': 'بانک سامان', '589210': 'بانک سپه', '504172': 'بانک رسالت'
+    '621986': 'بانک سامان', '589210': 'بانک سپه', '504172': 'بانک رسالت', '606373': 'بانک مهر ایران'
   };
 
   function checkNationalCode(code) {
@@ -266,6 +262,21 @@
     for (let i = 0; i < 9; i++) sum += parseInt(code[i]) * (10 - i);
     const r = sum % 11;
     return (r < 2 && check === r) || (r >= 2 && check === (11 - r));
+  }
+
+  function checkLuhn(card) {
+    card = card.replace(/\D/g, '');
+    if (card.length !== 16) return false;
+    let sum = 0;
+    for (let i = 0; i < 16; i++) {
+      let d = parseInt(card[i]);
+      if (i % 2 === 0) {
+        d *= 2;
+        if (d > 9) d -= 9;
+      }
+      sum += d;
+    }
+    return sum % 10 === 0;
   }
 
   function switchRole(role) {
@@ -288,6 +299,7 @@
     e.target.value = val.match(/.{1,4}/g)?.join(' ') || val;
     const bin = val.substring(0, 6);
     document.getElementById('s_bank_name').innerText = cardBins[bin] ? ('بانک: ' + cardBins[bin]) : '';
+    document.getElementById('s_card_err').style.display = (val.length === 16 && !checkLuhn(val)) ? 'block' : 'none';
   });
 
   document.getElementById('s_nid').addEventListener('input', function(e) {
@@ -311,8 +323,8 @@
         alert('کد ملی وارد شده طبق الگوریتم رسمی صحیح نیست.');
         return;
       }
-      if (card.length < 16) {
-        alert('شماره کارت ۱۶ رقمی الزامی است.');
+      if (card.length < 16 || !checkLuhn(card)) {
+        alert('شماره کارت ۱۶ رقمی معتبر الزامی است.');
         return;
       }
 
@@ -357,7 +369,19 @@
       document.getElementById('buyerActions').style.display = 'none';
 
       const profileUrl = window.location.origin + '/profile.html?id=' + loggedUser.phone;
-      document.getElementById('storeBioInput').value = profileUrl;
+      document.getElementById('storeBioBox').innerHTML = `
+        <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:14px; margin-bottom:15px; text-align:right;">
+          <b style="color:#1e40af; font-size:13px;">🔗 لینک اختصاصی شما برای بیو اینستاگرام:</b>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <input type="text" id="storeBioInput" readonly value="${profileUrl}" style="direction:ltr; text-align:left; font-size:12px; background:#fff; flex:1; padding:10px; border:1px solid #bfdbfe; border-radius:8px;">
+            <button onclick="copyStoreLink()" id="btnCopy" style="width:auto; padding:10px 14px; background:#2563eb; color:#fff; border:none; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">کپی لینک</button>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+            <small style="color:#64748b;">این لینک را در بایو اینستاگرام خود قرار دهید.</small>
+            <a href="${profileUrl}" target="_blank" style="font-size:12px; color:#2563eb; font-weight:bold; text-decoration:none;">مشاهده صفحه ←</a>
+          </div>
+        </div>
+      `;
 
       pricing.innerHTML = '<span style="color:#15803d;">هزینه درج آگهی: رایگان (ویژه فروشندگان تاییدشده)</span>';
       adBtn.innerText = 'انتشار رایگان در ویترین';
@@ -375,6 +399,43 @@
       adBtn.style.background = '#2563eb';
 
       fetchUserDeals('buyer', loggedUser.phone);
+    }
+  }
+
+  function copyStoreLink() {
+    const input = document.getElementById('storeBioInput');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(input.value).then(() => {
+        showCopiedFeedback();
+      }).catch(() => {
+        fallbackCopy(input);
+      });
+    } else {
+      fallbackCopy(input);
+    }
+  }
+
+  function fallbackCopy(input) {
+    try {
+      document.execCommand('copy');
+      showCopiedFeedback();
+    } catch (err) {
+      prompt('لطفاً لینک را به صورت دستی کپی کنید:', input.value);
+    }
+  }
+
+  function showCopiedFeedback() {
+    const btn = document.getElementById('btnCopy');
+    if (btn) {
+      btn.innerText = 'کپی شد! ✓';
+      btn.style.background = '#10b981';
+      setTimeout(() => {
+        btn.innerText = 'کپی لینک';
+        btn.style.background = '#2563eb';
+      }, 2000);
     }
   }
 
