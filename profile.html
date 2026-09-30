@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>پروفایل فروشنده تاییدشده | پرداخت امن</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 18px;
+      --shadow: 0 12px 30px -8px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 16px 12px 60px;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+    }
+    .container { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 14px; }
+
+    /* کارت پروفایل فروشنده */
+    .profile-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 80px;
+      background: linear-gradient(135deg, #1e293b, var(--primary));
+    }
+    .avatar-wrapper {
+      position: relative;
+      width: 84px;
+      height: 84px;
+      margin: 15px auto 12px;
+      border-radius: 50%;
+      background: #fff;
+      padding: 4px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    }
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    .verified-icon {
+      position: absolute;
+      bottom: 2px;
+      left: 2px;
+      background: var(--success);
+      color: #fff;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      font-size: 12px;
+    }
+    .store-name {
+      font-size: 19px;
+      font-weight: 800;
+      margin: 0 0 6px;
+    }
+    .store-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--success-light);
+      color: #047857;
+      border: 1px solid #a7f3d0;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+    .store-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 16px;
+    }
+
+    /* آمار اعتماد و اعتبار */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border);
+    }
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 16px; font-weight: 800; color: var(--primary); }
+    .stat-lbl { font-size: 10px; color: var(--muted); font-weight: bold; margin-top: 2px; }
+
+    .insta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    /* فرم ثبت سفارش سریع خریدار */
+    .order-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .order-card h3 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      text-align: center;
+    }
+    .order-sub {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .field { margin-bottom: 14px; text-align: right; }
+    .field label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; }
+    .field input, .field select {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; background: #f8fafc;
+    }
+    .field input:focus { border-color: var(--primary); background: #fff; }
+
+    .btn-pay {
+      width: 100%; padding: 14px; background: var(--primary); color: #fff;
+      font-weight: 800; font-size: 15px; border: none; border-radius: 12px;
+      cursor: pointer; font-family: inherit; margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+    }
+    .btn-pay:hover { background: var(--primary-hover); }
+
+    .guarantee-box {
+      margin-top: 14px;
+      padding: 12px;
+      background: #fffbeb;
+      border: 1px solid #fef3c7;
+      border-radius: 10px;
+      font-size: 11px;
+      color: #92400e;
+      line-height: 1.6;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  
+  <!-- کارت هویت فروشگاه -->
+  <div class="profile-card">
+    <div class="avatar-wrapper">
+      <div class="avatar">🛍️</div>
+      <div class="verified-icon">✓</div>
+    </div>
+    
+    <h2 class="store-name" id="pName">فروشگاه اختصاصی</h2>
+    <div class="store-badge">
+      <span>●</span> هویت و شماره حساب تایید شده
+    </div>
+    <p class="store-desc" id="pDesc">
+      تمامی پرداخت‌های این فروشگاه تحت پوشش گارانتی تحویل و بازرسی سامانه امن انجام می‌شود.
+    </p>
+
+    <!-- آمار اعتماد -->
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num" id="pDealsCount">+۴۸</div>
+        <div class="stat-lbl">معامله موفق</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">۱۰۰٪</div>
+        <div class="stat-lbl">رضایت خریداران</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">۲۴ ساعت</div>
+        <div class="stat-lbl">مهلت تست کالا</div>
+      </div>
+    </div>
+
+    <a href="#" id="pInstaLink" target="_blank" class="insta-btn">
+      <span>ورود به پیج اینستاگرام فروشگاه</span>
+      <span>←</span>
+    </a>
+  </div>
+
+  <!-- فرم واریز امن مستقیم برای این فروشگاه -->
+  <div class="order-card">
+    <h3>پرداخت امن به این فروشنده</h3>
+    <div class="order-sub">مبلغ تا تحویل سالم کالا و اتمام مهلت تست نزد سامانه به امانت می‌ماند</div>
+
+    <div class="field">
+      <label>نام کالا یا توافق خرید:</label>
+      <input type="text" id="orderTitle" placeholder="مثال: ست ورزشی سایز L">
+    </div>
+
+    <div class="field">
+      <label>مبلغ توافق‌شده (تومان):</label>
+      <input type="number" id="orderAmount" placeholder="مبلغ توافقی">
+    </div>
+
+    <div class="field">
+      <label>شماره موبایل شما (خریدار):</label>
+      <input type="tel" id="buyerMobile" placeholder="09xxxxxxxxx" maxlength="11">
+    </div>
+
+    <div class="field">
+      <label>آدرس یا کد پستی تحویل گیرنده:</label>
+      <input type="text" id="buyerAddress" placeholder="شهر و نشانی جهت ارسال کالا">
+    </div>
+
+    <button class="btn-pay" onclick="createEscrowOrder()">ایجاد معامله و ورود به پرداخت امن</button>
+
+    <div class="guarantee-box">
+      <span>🛡️</span>
+      <div>
+        <b>تضمین امنیت پرداخت:</b>
+        وجه شما مستقیماً به حساب فروشنده نمی‌رود؛ بلکه در حساب واسطه مسدود می‌شود و تنها پس از ثبت کد رهگیری پستی و تایید دریافت توسط شما، به فروشنده تسویه خواهد شد.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // استخراج پارامترهای آدرس url (مثال: profile.html?shop=gallery_roze&phone=09224280053)
+  const urlParams = new URLSearchParams(window.location.search);
+  const shopName = urlParams.get('shop') || 'فروشگاه تاییدشده';
+  const sellerPhone = urlParams.get('phone') || '09224280053';
+  const instaId = urlParams.get('insta') || '';
+
+  // تنظیم اطلاعات در صفحه
+  document.getElementById('pName').innerText = decodeURIComponent(shopName);
+  document.title = `${decodeURIComponent(shopName)} | پرداخت امن`;
+
+  if (instaId) {
+    document.getElementById('pInstaLink').href = `https://instagram.com/${instaId.replace('@','')}`;
+  } else {
+    document.getElementById('pInstaLink').style.display = 'none';
+  }
+
+  async function createEscrowOrder() {
+    const title = document.getElementById('orderTitle').value.trim();
+    const amount = document.getElementById('orderAmount').value.trim();
+    const buyerPhone = document.getElementById('buyerMobile').value.trim();
+
+    if (!title || !amount || buyerPhone.length !== 11) {
+      alert('لطفاً عنوان کالا، مبلغ و شماره موبایل ۱۱ رقمی خود را وارد کنید.');
+      return;
+    }
+
+    const payload = {
+      title: `${decodeURIComponent(shopName)} - ${title}`,
+      amount: amount,
+      buyer_phone: buyerPhone,
+      seller_phone: sellerPhone,
+      seller_sheba: 'IR920170000000105324139001', // اتصال خودکار به شبای فروشنده
+      fee_payer: 'buyer'
+    };
+
+    try {
+      const res = await fetch('/api/deals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.success && data.dealId) {
+        window.location.href = `/deal.html#${data.dealId}`;
+      } else {
+        alert('خطا در ثبت سفارش: ' + (data.error || ''));
+      }
+    } catch(e) {
+      alert('خطا در ارتباط با سرور سامانه.');
+    }
+  }
+</script>
+
+</body>
+</html>
