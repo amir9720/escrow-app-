@@ -3,388 +3,184 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>سامانه واسطه امن | پنل کاربری و آگهی‌ها</title>
+  <title>پنل کاربری و ویترین آگهی‌ها | واسطه پرداخت امن</title>
   <style>
     :root {
       --primary: #2563eb;
-      --primary-dark: #1d4ed8;
+      --primary-hover: #1d4ed8;
       --primary-light: #eff6ff;
       --accent: #10b981;
-      --accent-light: #ecfdf5;
       --bg: #f8fafc;
-      --card-bg: #ffffff;
+      --card: #ffffff;
       --text: #0f172a;
       --muted: #64748b;
       --border: #e2e8f0;
       --danger: #ef4444;
-      --warning: #f59e0b;
       --radius: 16px;
-      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06);
     }
-
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
       background: var(--bg);
       margin: 0;
-      padding: 16px 12px 90px;
+      padding: 16px 12px 85px;
       color: var(--text);
       display: flex;
       justify-content: center;
     }
+    .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
 
-    .app-wrapper {
-      width: 100%;
-      max-width: 480px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    .header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 18px; background: #fff; border-radius: var(--radius);
+      box-shadow: var(--shadow); border: 1px solid var(--border);
     }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; color: var(--primary); }
 
-    /* هدر اپلیکیشن */
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 18px;
-      background: #ffffff;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
-      font-size: 16px;
-      color: var(--primary);
-    }
-    .brand-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--primary), #3b82f6);
-      color: #fff;
-      border-radius: 10px;
-      display: grid;
-      place-items: center;
-    }
-
-    /* ویترین تبلیغات شاخص (Banner Showcase) */
+    /* ویترین زنده آگهی‌ها */
     .ads-showcase {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding: 4px 2px 10px;
-      scroll-snap-type: x mandatory;
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+      display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 10px;
+      scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none;
     }
     .ads-showcase::-webkit-scrollbar { display: none; }
-
     .ad-banner {
-      flex: 0 0 88%;
-      scroll-snap-align: center;
+      flex: 0 0 88%; scroll-snap-align: center;
       background: linear-gradient(135deg, #1e293b, #0f172a);
-      color: #ffffff;
-      border-radius: var(--radius);
-      padding: 16px;
-      box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.2);
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 140px;
+      color: #fff; border-radius: var(--radius); padding: 16px;
+      position: relative; overflow: hidden; display: flex; flex-direction: column;
+      justify-content: space-between; min-height: 130px;
     }
-    .ad-banner::after {
-      content: "";
-      position: absolute;
-      top: -30px;
-      left: -30px;
-      width: 100px;
-      height: 100px;
-      background: rgba(37, 99, 235, 0.35);
-      border-radius: 50%;
-      filter: blur(25px);
+    .ad-badge {
+      display: inline-block; background: rgba(16, 185, 129, 0.2);
+      color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; width: fit-content;
     }
-    .ad-badge-gold {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: rgba(245, 158, 11, 0.2);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.4);
-      padding: 3px 8px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      width: fit-content;
-    }
-    .ad-banner h4 { margin: 10px 0 4px; font-size: 16px; font-weight: 700; }
+    .ad-banner h4 { margin: 8px 0 4px; font-size: 15px; font-weight: 700; }
     .ad-banner p { margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.5; }
-    .ad-action {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 6px 14px;
-      background: var(--primary);
-      color: #fff;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: bold;
-      width: fit-content;
+    .ad-link-btn {
+      display: inline-block; margin-top: 10px; padding: 6px 12px;
+      background: var(--primary); color: #fff; text-decoration: none;
+      border-radius: 8px; font-size: 12px; font-weight: bold; width: fit-content;
     }
 
-    /* کارت اصلی */
+    .empty-ads {
+      background: #ffffff; border: 1.5px dashed var(--border);
+      border-radius: var(--radius); padding: 20px; text-align: center;
+      font-size: 12px; color: var(--muted); line-height: 1.6;
+    }
+
     .card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      background: var(--card); border-radius: var(--radius);
+      padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border);
     }
-
-    /* سلکتور نقش (فروشنده / خریدار) */
-    .role-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
     .role-tile {
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      background: #fafafa;
+      border: 2px solid var(--border); border-radius: 12px; padding: 12px 8px;
+      text-align: center; cursor: pointer; background: #fafafa; font-size: 13px; font-weight: 700;
     }
-    .role-tile.active {
-      border-color: var(--primary);
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-    .role-tile span { display: block; font-size: 20px; margin-bottom: 4px; }
-    .role-tile strong { font-size: 13px; }
+    .role-tile.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
 
-    /* فرم‌ها و اینپوت‌ها */
-    .field { margin-bottom: 14px; }
-    .field label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted);
-      margin-bottom: 6px;
+    .field { margin-bottom: 14px; text-align: right; }
+    .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+    .field input, .field textarea {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; background: #f8fafc;
     }
-    .field input, .field textarea, .field select {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: inherit;
-      outline: none;
-      background: #f8fafc;
-      transition: border 0.2s;
-    }
-    .field input:focus, .field textarea:focus {
-      border-color: var(--primary);
-      background: #fff;
-    }
-    .card-num {
-      direction: ltr;
-      letter-spacing: 2px;
-      text-align: center;
-      font-family: monospace;
-      font-size: 16px;
-    }
+    .field input:focus, .field textarea:focus { border-color: var(--primary); background: #fff; }
+    .card-num { direction: ltr; letter-spacing: 2px; text-align: center; font-family: monospace; font-size: 15px; }
 
-    .badge-info {
-      font-size: 11px;
-      font-weight: bold;
-      margin-top: 4px;
-      display: block;
-    }
+    .badge-info { font-size: 11px; font-weight: bold; margin-top: 4px; display: block; }
     .bank-name { color: var(--primary); }
-    .err-text { color: var(--danger); display: none; }
+    .err-msg { color: var(--danger); display: none; }
 
-    /* دکمه‌ها */
     .btn {
-      width: 100%;
-      padding: 13px;
-      border: none;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: opacity 0.2s;
+      width: 100%; padding: 13px; border: none; border-radius: 10px;
+      font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit;
     }
-    .btn:active { opacity: 0.85; }
     .btn-primary { background: var(--primary); color: #fff; }
-    .btn-success { background: var(--accent); color: #fff; }
-    .btn-secondary { background: #e2e8f0; color: #334155; }
+    .btn-accent { background: var(--accent); color: #fff; }
 
-    /* نوبار پایین موبایل (Bottom Nav) */
     .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 68px;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 0 10px;
-      z-index: 99;
+      position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
+      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border); display: flex;
+      justify-content: space-around; align-items: center; z-index: 99;
     }
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 700;
-      text-decoration: none;
-      cursor: pointer;
-      border: none;
-      background: none;
+    .nav-btn {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 4px; color: var(--muted); font-size: 11px; font-weight: 700;
+      border: none; background: none; cursor: pointer;
     }
-    .nav-item.active { color: var(--primary); }
-    .nav-item svg { width: 22px; height: 22px; }
-
-    /* لیست آگهی‌ها در داشبورد */
-    .ad-item {
-      display: flex;
-      gap: 12px;
-      border-bottom: 1px solid var(--border);
-      padding: 12px 0;
-    }
-    .ad-thumb {
-      width: 60px;
-      height: 60px;
-      border-radius: 10px;
-      background: var(--primary-light);
-      display: grid;
-      place-items: center;
-      font-size: 24px;
-    }
-    .ad-details { flex: 1; }
-    .ad-details h5 { margin: 0 0 4px; font-size: 14px; }
-    .ad-details p { margin: 0; font-size: 12px; color: var(--muted); }
+    .nav-btn.active { color: var(--primary); }
+    .nav-btn svg { width: 22px; height: 22px; }
   </style>
 </head>
 <body>
 
-<div class="app-wrapper">
+<div class="container">
   
-  <!-- هدر -->
-  <header class="app-header">
+  <div class="header">
     <div class="brand">
-      <div class="brand-icon">
-        <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-      </div>
-      <span>واسطه پرداخت امن</span>
+      <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+      <span>پنل فروشندگان و خریداران امن</span>
     </div>
-    <span id="topBadge" style="font-size:11px; padding:4px 10px; border-radius:12px; background:var(--primary-light); color:var(--primary); font-weight:700;">نسخه رسمی</span>
-  </header>
+    <a href="/" style="font-size:12px; color:var(--primary); text-decoration:none; font-weight:bold;">ثبت معامله جدید</a>
+  </div>
 
-  <!-- جایگاه اختصاصی تبلیغات ویژه (بنرهای شیک شیشه‌ای) -->
-  <section>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding: 0 4px;">
-      <span style="font-size:13px; font-weight:800; color:#334155;">ویترین فروشندگان معتبر</span>
-      <span style="font-size:11px; color:var(--primary); font-weight:bold;">آگهی‌های تاییدشده</span>
+  <!-- ویترین زنده تبلیغات ثبت‌شده -->
+  <div>
+    <div style="font-size:13px; font-weight:800; color:#334155; margin-bottom:8px; padding:0 4px;">
+      ویترین آگهی‌های فروشندگان تاییدشده
     </div>
-    
     <div class="ads-showcase" id="adShowcase">
-      <!-- آگهی نمونه ۱ -->
-      <div class="ad-banner">
-        <div class="ad-badge-gold">
-          <span>★</span> فروشگاه تاییدشده
-        </div>
-        <div>
-          <h4>مزون لوکس پوشاک بانوان</h4>
-          <p>ارسال فوری با پرداخت امن | خرید بدون ریسک</p>
-        </div>
-        <a href="https://instagram.com" target="_blank" class="ad-action">مشاهده پیج و محصولات ←</a>
-      </div>
-
-      <!-- آگهی نمونه ۲ -->
-      <div class="ad-banner" style="background: linear-gradient(135deg, #1e3a8a, #0f172a);">
-        <div class="ad-badge-gold" style="color:#6ee7b7; border-color:#059669; background:rgba(5,150,105,0.2);">
-          <span>✓</span> ارائه‌دهنده خدمات امن
-        </div>
-        <div>
-          <h4>طراحی اختصاصی سایت و سئو</h4>
-          <p>تحویل پروژه قبل از آزادسازی بیعانه با واسطه امن</p>
-        </div>
-        <a href="#" class="ad-action" style="background:#10b981;">ثبت سفارش امن ←</a>
+      <div id="noAdsBox" class="empty-ads" style="width:100%;">
+        هنوز آگهی ثبت نشده است. فروشندگان تاییدشده می‌توانند آگهی پیج و کالای خود را به صورت رایگان در این بخش ثبت کنند.
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- بخش احراز هویت / ثبت‌‌نام -->
+  <!-- بخش احراز هویت / ثبت‌نام -->
   <div id="authSection" class="card">
-    <h3 style="margin-top:0; text-align:center; font-size:18px;">حساب کاربری</h3>
-    <p style="text-align:center; font-size:12px; color:var(--muted); margin-bottom:18px;">برای استفاده از خدمات امانی یا درج آگهی وارد شوید</p>
-
-    <!-- تب‌های انتخاب نقش -->
+    <h3 style="margin-top:0; text-align:center;">ورود / ثبت‌نام در سامانه</h3>
     <div class="role-grid">
-      <div id="roleSeller" class="role-tile active" onclick="switchRole('seller')">
-        <span>🛍️</span>
-        <strong>فروشنده پیج / کالا</strong>
-      </div>
-      <div id="roleBuyer" class="role-tile" onclick="switchRole('buyer')">
-        <span>🛒</span>
-        <strong>خریدار کالا</strong>
-      </div>
+      <div id="roleSeller" class="role-tile active" onclick="switchRole('seller')">فروشنده کالا / پیج</div>
+      <div id="roleBuyer" class="role-tile" onclick="switchRole('buyer')">خریدار</div>
     </div>
 
-    <!-- فرم فروشنده -->
     <div id="sellerBox">
       <div class="field">
-        <label>نام فروشگاه، پیج یا نام شما:</label>
-        <input type="text" id="s_name" placeholder="مثال: گالری رز یا محمد رضایی">
+        <label>نام فروشگاه / پیج / نام شما:</label>
+        <input type="text" id="s_name" placeholder="نام کسب‌وکار یا نام خانوادگی">
       </div>
       <div class="field">
         <label>شماره موبایل فعال:</label>
         <input type="tel" id="s_phone" placeholder="09xxxxxxxxx" maxlength="11">
       </div>
       <div class="field">
-        <label>کد ملی (الزامی جهت تطبیق هویت):</label>
+        <label>کد ملی (۱۰ رقم - الزامی):</label>
         <input type="tel" id="s_nid" placeholder="۱۰ رقم کد ملی" maxlength="10">
-        <span id="s_nid_err" class="badge-info err-text">کد ملی نامعتبر است!</span>
+        <span id="s_nid_err" class="badge-info err-msg">کد ملی وارد شده طبق الگوریتم رسمی صحیح نیست.</span>
       </div>
       <div class="field">
         <label>شماره کارت بانکی تسویه (۱۶ رقم):</label>
         <input type="text" id="s_card" class="card-num" placeholder="---- ---- ---- ----" maxlength="19">
         <span id="s_bank_name" class="badge-info bank-name"></span>
-        <span id="s_card_err" class="badge-info err-text">شماره کارت نامعتبر است.</span>
+        <span id="s_card_err" class="badge-info err-msg">شماره کارت نامعتبر است.</span>
       </div>
-      <button class="btn btn-primary" onclick="handleAuthSubmit()">ورود / احراز هویت فروشنده</button>
+      <button class="btn btn-primary" onclick="handleAuth()">ورود و تکمیل احراز هویت فروشنده</button>
     </div>
 
-    <!-- فرم خریدار -->
     <div id="buyerBox" style="display:none;">
       <div class="field">
         <label>نام و نام خانوادگی:</label>
-        <input type="text" id="b_name" placeholder="مثال: علی احمدی">
+        <input type="text" id="b_name" placeholder="نام و نام خانوادگی">
       </div>
       <div class="field">
         <label>شماره موبایل:</label>
         <input type="tel" id="b_phone" placeholder="09xxxxxxxxx" maxlength="11">
       </div>
-      <button class="btn btn-primary" onclick="handleAuthSubmit()">ورود به عنوان خریدار</button>
+      <button class="btn btn-primary" onclick="handleAuth()">ورود به حساب خریدار</button>
     </div>
   </div>
 
@@ -392,47 +188,46 @@
   <div id="dashSection" class="card" style="display:none;">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:15px;">
       <div>
-        <h4 id="dashUser" style="margin:0; font-size:16px;">داشبورد من</h4>
+        <h4 id="dashUser" style="margin:0; font-size:15px;"></h4>
         <span id="dashRoleBadge" style="font-size:11px; padding:2px 8px; border-radius:6px; font-weight:bold;"></span>
       </div>
-      <button onclick="location.reload()" class="btn btn-secondary" style="width:auto; padding:6px 12px; font-size:12px;">خروج</button>
+      <button onclick="location.reload()" style="background:#f1f5f9; border:1px solid var(--border); padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer;">خروج</button>
     </div>
 
-    <!-- بخش‌های داشبورد -->
     <div id="viewActivity">
       <div id="sellerActions">
-        <a href="/" class="btn btn-success" style="text-decoration:none; margin-bottom:15px;">+ ساخت لینک معامله امن جدید</a>
-        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:14px; font-size:13px; text-align:center; color:var(--muted);">
-          سفارش یا تراکنش فعالی ثبت نشده است.
+        <a href="/" class="btn btn-accent" style="display:block; text-align:center; text-decoration:none; margin-bottom:14px;">+ ایجاد لینک معامله امن جدید</a>
+        <div id="sellerDealsList" style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:15px; font-size:13px; text-align:center; color:var(--muted);">
+          در حال بررسی سفارش‌های ثبت‌شده به نام شما...
         </div>
       </div>
       <div id="buyerActions" style="display:none;">
-        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:14px; font-size:13px; text-align:center; color:var(--muted);">
-          لیست خریدهای امن شما در این قسمت ظاهر خواهد شد.
+        <div id="buyerDealsList" style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:15px; font-size:13px; text-align:center; color:var(--muted);">
+          در حال بارگذاری تراکنش‌ها و خریدهای شما...
         </div>
       </div>
     </div>
 
-    <!-- بخش مدیریت تبلیغ -->
+    <!-- فرم ثبت آگهی -->
     <div id="viewAds" style="display:none;">
       <div style="background:var(--primary-light); border:1.5px dashed var(--primary); border-radius:12px; padding:16px;">
-        <h4 style="margin:0 0 6px; font-size:15px;">ثبت آگهی جدید در ویترین بالا</h4>
+        <h4 style="margin:0 0 6px; font-size:15px;">ثبت آگهی در ویترین سراسری</h4>
         <p id="adPricingLabel" style="margin:0 0 12px; font-size:12px; font-weight:bold;"></p>
 
         <div class="field">
-          <label>عنوان بنر / نام پیج:</label>
-          <input type="text" id="ad_title" placeholder="مثال: فروشگاه کفش اورجینال">
+          <label>نام پیج / عنوان آگهی:</label>
+          <input type="text" id="ad_title" placeholder="عنوان یا نام برند">
         </div>
         <div class="field">
-          <label>لینک پیج یا سایت:</label>
+          <label>لینک پیج یا فروشگاه:</label>
           <input type="text" id="ad_link" placeholder="https://instagram.com/..." style="direction:ltr; text-align:left;">
         </div>
         <div class="field">
-          <label>متن کوتاه توضیحات:</label>
-          <textarea id="ad_desc" rows="2" placeholder="توضیح تخفیف یا خدمات..."></textarea>
+          <label>متن کوتاه معرفی:</label>
+          <textarea id="ad_desc" rows="2" placeholder="توضیحات کوتاه محصول یا خدمات..."></textarea>
         </div>
 
-        <button id="adSubmitButton" class="btn btn-primary" onclick="submitNewAd()">ثبت بنر تبلیغاتی</button>
+        <button id="adSubmitBtn" class="btn btn-primary" onclick="publishAd()">انتشار آگهی</button>
       </div>
     </div>
   </div>
@@ -441,15 +236,15 @@
 
 <!-- منوی پایین موبایل -->
 <nav class="bottom-bar">
-  <button class="nav-item active" onclick="switchNav('home')">
+  <button class="nav-btn active" onclick="switchNav('home')">
     <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    <span>صفحه اصلی</span>
+    <span>داشبورد</span>
   </button>
-  <button class="nav-item" onclick="switchNav('ads')">
+  <button class="nav-btn" onclick="switchNav('ads')">
     <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-    <span>ثبت تبلیغات</span>
+    <span>ثبت آگهی</span>
   </button>
-  <button class="nav-item" onclick="switchNav('deals')">
+  <button class="nav-btn" onclick="location.href='/'">
     <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
     <span>معامله امن</span>
   </button>
@@ -489,22 +284,20 @@
     }
   }
 
-  // فرمت ۴ رقمی کارت و نمایش بانک
   document.getElementById('s_card').addEventListener('input', function(e) {
     let val = e.target.value.replace(/\D/g, '').substring(0, 16);
     e.target.value = val.match(/.{1,4}/g)?.join(' ') || val;
     const bin = val.substring(0, 6);
-    document.getElementById('s_bank_name').innerText = cardBins[bin] ? ('صادرکننده: ' + cardBins[bin]) : '';
+    document.getElementById('s_bank_name').innerText = cardBins[bin] ? ('بانک: ' + cardBins[bin]) : '';
   });
 
-  // چک کدملی
   document.getElementById('s_nid').addEventListener('input', function(e) {
     let val = e.target.value.replace(/\D/g, '');
     e.target.value = val;
     document.getElementById('s_nid_err').style.display = (val.length === 10 && !checkNationalCode(val)) ? 'block' : 'none';
   });
 
-  function handleAuthSubmit() {
+  function handleAuth() {
     if (activeRole === 'seller') {
       const name = document.getElementById('s_name').value.trim();
       const phone = document.getElementById('s_phone').value.trim();
@@ -516,24 +309,22 @@
         return;
       }
       if (!checkNationalCode(nid)) {
-        alert('کد ملی وارد شده طبق الگوریتم رسمی صحیح نیست.');
+        alert('کد ملی وارد شده نامعتبر است.');
         return;
       }
       if (card.length < 16) {
         alert('شماره کارت ۱۶ رقمی الزامی است.');
         return;
       }
-
-      loggedUser = { name: name, phone: phone, role: 'seller' };
+      loggedUser = { name, phone, role: 'seller' };
     } else {
       const name = document.getElementById('b_name').value.trim();
       const phone = document.getElementById('b_phone').value.trim();
-
       if (!name || phone.length !== 11) {
         alert('نام و شماره موبایل ۱۱ رقمی الزامی است.');
         return;
       }
-      loggedUser = { name: name, phone: phone, role: 'buyer' };
+      loggedUser = { name, phone, role: 'buyer' };
     }
 
     renderDashboard();
@@ -546,79 +337,104 @@
 
     const badge = document.getElementById('dashRoleBadge');
     const pricing = document.getElementById('adPricingLabel');
-    const adBtn = document.getElementById('adSubmitButton');
+    const adBtn = document.getElementById('adSubmitBtn');
 
     if (loggedUser.role === 'seller') {
-      badge.innerText = 'فروشنده تاییدشده ✓';
-      badge.style.background = '#dcfce7';
-      badge.style.color = '#15803d';
+      badge.innerText = 'فروشنده احراز هویت شده ✓';
+      badge.style.background = '#dcfce7'; badge.style.color = '#15803d';
       document.getElementById('sellerActions').style.display = 'block';
       document.getElementById('buyerActions').style.display = 'none';
 
-      pricing.innerHTML = '<span style="color:#15803d;">تعرفه: ۱۰۰٪ رایگان (هدیه پیوستن به فروشندگان امن)</span>';
+      pricing.innerHTML = '<span style="color:#15803d;">هزینه درج آگهی: رایگان (ویژه فروشندگان تاییدشده)</span>';
       adBtn.innerText = 'انتشار رایگان در ویترین';
       adBtn.style.background = '#10b981';
+
+      fetchUserDeals('seller', loggedUser.phone);
     } else {
       badge.innerText = 'حساب خریدار';
-      badge.style.background = '#f1f5f9';
-      badge.style.color = '#475569';
+      badge.style.background = '#f1f5f9'; badge.style.color = '#475569';
       document.getElementById('sellerActions').style.display = 'none';
       document.getElementById('buyerActions').style.display = 'block';
 
-      pricing.innerHTML = '<span style="color:#b45309;">تعرفه: ۵۰,۰۰۰ تومان در روز (اتصال به درگاه)</span>';
+      pricing.innerHTML = '<span style="color:#b45309;">تعرفه درج آگهی: ۵۰,۰۰۰ تومان در روز</span>';
       adBtn.innerText = 'پرداخت ۵۰,۰۰۰ تومان و انتشار';
       adBtn.style.background = '#2563eb';
+
+      fetchUserDeals('buyer', loggedUser.phone);
+    }
+  }
+
+  // بارگذاری معاملات واقعی از دیتابیس D1 بر اساس شماره تماس
+  async function fetchUserDeals(role, phone) {
+    const container = document.getElementById(role === 'seller' ? 'sellerDealsList' : 'buyerDealsList');
+    try {
+      const res = await fetch(`/api/deals?phone=${phone}&role=${role}`);
+      const data = await res.json();
+      if (data.deals && data.deals.length > 0) {
+        container.innerHTML = data.deals.map(d => `
+          <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:10px; text-align:right;">
+            <div style="font-weight:bold; font-size:14px; margin-bottom:4px;">${d.title}</div>
+            <div style="font-size:12px; color:#64748b; display:flex; justify-content:space-between;">
+              <span>مبلغ: ${Number(d.amount).toLocaleString('fa-IR')} تومان</span>
+              <a href="/deal.html#${d.id}" style="color:#2563eb; font-weight:bold; text-decoration:none;">مشاهده معامله ←</a>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        container.innerHTML = 'معامله فعالی ثبت نشده است.';
+      }
+    } catch(e) {
+      container.innerHTML = 'معامله فعالی ثبت نشده است.';
     }
   }
 
   function switchNav(type) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
     if (type === 'ads') {
-      document.querySelectorAll('.nav-item')[1].classList.add('active');
+      document.querySelectorAll('.nav-btn')[1].classList.add('active');
       if (!loggedUser) {
-        alert('لطفاً ابتدا ثبت‌نام یا ورود کنید.');
+        alert('لطفاً ابتدا وارد حساب خود شوید.');
         return;
       }
       document.getElementById('viewActivity').style.display = 'none';
       document.getElementById('viewAds').style.display = 'block';
-    } else if (type === 'deals') {
-      window.location.href = '/';
     } else {
-      document.querySelectorAll('.nav-item')[0].classList.add('active');
+      document.querySelectorAll('.nav-btn')[0].classList.add('active');
       document.getElementById('viewAds').style.display = 'none';
       document.getElementById('viewActivity').style.display = 'block';
     }
   }
 
-  function submitNewAd() {
+  function publishAd() {
     const title = document.getElementById('ad_title').value.trim();
     const link = document.getElementById('ad_link').value.trim();
     const desc = document.getElementById('ad_desc').value.trim();
 
     if (!title || !desc) {
-      alert('لطفاً عنوان و متن آگهی را پر کنید.');
+      alert('لطفاً عنوان و متن آگهی را وارد کنید.');
       return;
     }
 
     if (loggedUser.role === 'seller') {
-      // افزودن مستقیم کارت تبلیغ جدید به اسلایدر بالا
       const showcase = document.getElementById('adShowcase');
+      const noAds = document.getElementById('noAdsBox');
+      if (noAds) noAds.remove();
+
       const newAd = document.createElement('div');
       newAd.className = 'ad-banner';
-      newAd.style.background = 'linear-gradient(135deg, #0f766e, #0f172a)';
       newAd.innerHTML = `
-        <div class="ad-badge-gold" style="color:#a7f3d0; border-color:#059669;">★ فروشنده ویژه سامانه</div>
+        <span class="ad-badge">★ فروشنده معتبر</span>
         <div>
           <h4>${title}</h4>
           <p>${desc}</p>
         </div>
-        <a href="${link || '#'}" target="_blank" class="ad-action" style="background:#0d9488;">مشاهده و خرید امن ←</a>
+        <a href="${link || '#'}" target="_blank" class="ad-link-btn">مشاهده پیج / خرید امن ←</a>
       `;
       showcase.prepend(newAd);
-      alert('آگهی شما با موفقیت و به صورت رایگان در ویترین بالای سایت منتشر شد!');
+      alert('آگهی شما با موفقیت در ویترین بالای سایت منتشر شد!');
       switchNav('home');
     } else {
-      alert('در حال هدایت به درگاه پرداخت جهت واریز ۵۰,۰۰۰ تومان...');
+      alert('در حال اتصال به درگاه پرداخت جهت پرداخت هزینه آگهی...');
     }
   }
 </script>
