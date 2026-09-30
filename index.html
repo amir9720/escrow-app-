@@ -2,86 +2,195 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>واسطه پرداخت امن</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>واسطه پرداخت امن | ثبت معامله</title>
   <style>
-    body { font-family: Tahoma, sans-serif; background: #f4f6f8; margin: 0; padding: 20px; }
-    .card { max-width: 500px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    h2 { margin-top: 0; color: #222; text-align: center; }
-    .form-group { margin-bottom: 14px; text-align: right; }
-    label { font-size: 13px; color: #555; display: block; margin-bottom: 5px; font-weight: bold; }
-    input, select, button { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; }
-    .sheba-wrapper { position: relative; display: flex; align-items: center; }
-    .sheba-prefix { position: absolute; left: 12px; font-weight: bold; color: #333; direction: ltr; font-size: 15px; }
-    .sheba-input { text-align: left; padding-left: 45px; letter-spacing: 1px; font-family: monospace; font-size: 15px; }
-    .bank-badge { font-size: 13px; margin-top: 6px; color: #0066cc; font-weight: bold; display: none; }
-    .error-msg { font-size: 12px; color: #d9534f; margin-top: 5px; display: none; }
-    button { background: #0066cc; color: #fff; font-weight: bold; border: none; cursor: pointer; margin-top: 15px; }
-    button:hover { background: #0052a3; }
-    .status { margin-top: 15px; padding: 15px; background: #eef6ff; border-radius: 8px; display: none; line-height: 1.8; text-align: center; }
-    .deal-btn { display: block; margin-top: 10px; padding: 12px; background: #28a745; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; text-align: center; }
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --radius: 18px;
+      --shadow: 0 12px 30px -8px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 18px 12px 60px;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+    }
+    .container { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 16px; }
     
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
-    .modal-box { background: #fff; padding: 25px; border-radius: 12px; max-width: 360px; width: 90%; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+    .brand-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+    }
+    .brand-title { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 16px; color: var(--primary); }
+    .brand-logo {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--primary), #3b82f6);
+      color: #fff; border-radius: 10px;
+      display: grid; place-items: center;
+    }
+    .panel-link {
+      font-size: 12px; font-weight: bold; color: var(--primary);
+      text-decoration: none; background: var(--primary-light);
+      padding: 6px 12px; border-radius: 8px;
+    }
+
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      box-shadow: var(--shadow);
+    }
+    h2 { font-size: 18px; margin: 0 0 6px; text-align: center; }
+    .sub-head { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 22px; }
+
+    .field { margin-bottom: 14px; text-align: right; }
+    .field label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; }
+    .field input, .field select {
+      width: 100%; padding: 13px 14px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 14px; font-family: inherit;
+      outline: none; background: #f8fafc; transition: all 0.2s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    .sheba-box { position: relative; display: flex; align-items: center; }
+    .sheba-prefix { position: absolute; left: 14px; font-weight: 800; color: #64748b; direction: ltr; font-size: 15px; }
+    .sheba-input { direction: ltr; text-align: left; padding-left: 45px !important; letter-spacing: 1px; font-family: monospace; font-size: 15px; }
+
+    .badge-info { font-size: 11px; font-weight: 700; margin-top: 5px; display: block; }
+    .bank-name { color: var(--primary); }
+    .err-msg { color: var(--danger); display: none; }
+
+    .btn-submit {
+      width: 100%; padding: 14px; background: var(--primary); color: #fff;
+      font-weight: 800; font-size: 15px; border: none; border-radius: 12px;
+      cursor: pointer; font-family: inherit; margin-top: 10px;
+      transition: background 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+    }
+    .btn-submit:hover { background: var(--primary-hover); }
+
+    .trust-box {
+      margin-top: 15px; padding: 12px; background: var(--primary-light);
+      border-radius: 10px; display: flex; align-items: center; gap: 10px; font-size: 11px; color: #1e40af; line-height: 1.5;
+    }
+
+    .result-box {
+      margin-top: 16px; padding: 16px; border-radius: 12px;
+      background: #ecfdf5; border: 1px solid #a7f3d0; text-align: center;
+      line-height: 1.8; display: none;
+    }
+    .deal-link-btn {
+      display: block; margin-top: 10px; padding: 12px;
+      background: var(--success); color: #fff; text-decoration: none;
+      border-radius: 10px; font-weight: bold; font-size: 13px;
+    }
+
+    /* مودال کد تایید */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 100; }
+    .modal-card { background: #fff; padding: 25px; border-radius: var(--radius); max-width: 360px; width: 90%; text-align: center; box-shadow: var(--shadow); }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <h2>ایجاد معامله امن جدید</h2>
+<div class="container">
   
-  <div class="form-group">
-    <label>عنوان معامله:</label>
-    <input type="text" id="title" placeholder="مثال: گوشی، طراحی سایت، اکانت بازی">
-  </div>
-
-  <div class="form-group">
-    <label>مبلغ معامله (تومان):</label>
-    <input type="number" id="amount" placeholder="مبلغ به تومان">
-  </div>
-
-  <div class="form-group">
-    <label>شماره موبایل خریدار (۱۱ رقم):</label>
-    <input type="tel" id="buyer_phone" placeholder="09xxxxxxxxx" maxlength="11">
-    <div id="buyer_err" class="error-msg">شماره موبایل خریدار باید ۱۱ رقمی و با 09 باشد.</div>
-  </div>
-
-  <div class="form-group">
-    <label>شماره موبایل فروشنده (جهت ارسال کد تایید):</label>
-    <input type="tel" id="seller_phone" placeholder="09xxxxxxxxx" maxlength="11">
-    <div id="seller_err" class="error-msg">شماره موبایل فروشنده باید ۱۱ رقمی و با 09 باشد.</div>
-  </div>
-
-  <div class="form-group">
-    <label>شماره شبای فروشنده (بدون IR):</label>
-    <div class="sheba-wrapper">
-      <span class="sheba-prefix">IR</span>
-      <input type="text" id="seller_sheba" class="sheba-input" placeholder="24 رقم شماره شبا" maxlength="24">
+  <div class="brand-card">
+    <div class="brand-title">
+      <div class="brand-logo">
+        <svg fill="currentColor" viewBox="0 0 24 24" width="22" height="22"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+      </div>
+      <span>پلتفرم معامله امن</span>
     </div>
-    <div id="bank_name" class="bank-badge"></div>
-    <div id="sheba_err" class="error-msg">شماره شبا باید ۲۴ رقم معتبر بانکی باشد.</div>
-  </div>
-  
-  <div class="form-group">
-    <label>پرداخت‌کننده کارمزد:</label>
-    <select id="fee_payer">
-      <option value="buyer">کارمزد ۳٪ بر عهده خریدار</option>
-      <option value="seller">کارمزد ۳٪ کسر از فروشنده</option>
-      <option value="split">کارمزد بالمناصفه (۵۰-۵۰)</option>
-    </select>
+    <a href="/panel" class="panel-link">ورود به پنل کاربری</a>
   </div>
 
-  <button onclick="startVerification()">احراز هویت و ثبت معامله</button>
-  <div id="result" class="status"></div>
+  <div class="form-card">
+    <h2>ایجاد لینک اختصاصی معامله</h2>
+    <div class="sub-head">وجه خریدار تا زمان تایید تحویل کالا به امانت نگهداری می‌شود</div>
+
+    <div class="field">
+      <label>عنوان کالا، خدمت یا سفارش:</label>
+      <input type="text" id="title" placeholder="مثال: گوشی آیفون ۱۳، کفش اسپرت، طراحی بنر">
+    </div>
+
+    <div class="field">
+      <label>مبلغ معامله (تومان):</label>
+      <input type="number" id="amount" placeholder="مبلغ به تومان">
+    </div>
+
+    <div class="field">
+      <label>شماره موبایل خریدار (۱۱ رقم):</label>
+      <input type="tel" id="buyer_phone" placeholder="09xxxxxxxxx" maxlength="11">
+      <span id="buyer_err" class="badge-info err-msg">شماره موبایل خریدار باید ۱۱ رقمی و با 09 باشد.</span>
+    </div>
+
+    <div class="field">
+      <label>شماره موبایل فروشنده (جهت ارسال کد تایید):</label>
+      <input type="tel" id="seller_phone" placeholder="09xxxxxxxxx" maxlength="11">
+      <span id="seller_err" class="badge-info err-msg">شماره موبایل فروشنده باید ۱۱ رقمی و با 09 باشد.</span>
+    </div>
+
+    <div class="field">
+      <label>شماره شبای فروشنده (بدون IR):</label>
+      <div class="sheba-box">
+        <span class="sheba-prefix">IR</span>
+        <input type="text" id="seller_sheba" class="sheba-input" placeholder="24 رقم شبا" maxlength="24">
+      </div>
+      <span id="bank_badge" class="badge-info bank-name"></span>
+      <span id="sheba_err" class="badge-info err-msg">شماره شبا باید ۲۴ رقم معتبر بانکی باشد.</span>
+    </div>
+
+    <div class="field">
+      <label>پرداخت‌کننده کارمزد واسطه:</label>
+      <select id="fee_payer">
+        <option value="buyer">کارمزد ۳٪ بر عهده خریدار</option>
+        <option value="seller">کارمزد ۳٪ کسر از فروشنده</option>
+        <option value="split">کارمزد بالمناصفه (۵۰-۵۰)</option>
+      </select>
+    </div>
+
+    <button class="btn-submit" onclick="startVerification()">احراز هویت و دریافت لینک معامله</button>
+
+    <div class="trust-box">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/></svg>
+      <span>تسویه حساب تضمینی پس از تحویل کالا مستقیماً به شبای تاییدشده بانکی واریز می‌گردد.</span>
+    </div>
+
+    <div id="result" class="result-box"></div>
+  </div>
+
 </div>
 
+<!-- مودال کد تایید -->
 <div id="otpModal" class="modal">
-  <div class="modal-box">
-    <h3>تایید شماره موبایل</h3>
-    <p style="font-size: 13px; color: #555; line-height: 1.6;" id="otpHint">کد تایید ارسال شد.</p>
-    <input type="number" id="otpCode" placeholder="کد ۴ رقمی" style="text-align: center; letter-spacing: 6px; font-size: 20px;">
-    <button onclick="confirmAndCreate()" style="background:#28a745;">تایید و نهایی‌سازی معامله</button>
-    <button onclick="closeModal()" style="background:#777; margin-top: 8px;">انصراف</button>
+  <div class="modal-card">
+    <h3 style="margin-top:0;">تایید شماره موبایل</h3>
+    <p style="font-size:13px; color:var(--muted); line-height:1.6;" id="otpHint"></p>
+    <input type="number" id="otpCode" placeholder="کد ۴ رقمی" style="width:100%; padding:12px; text-align:center; font-size:22px; letter-spacing:8px; border-radius:10px; border:1px solid var(--border); margin-bottom:12px;">
+    <button class="btn-submit" style="background:var(--success);" onclick="confirmAndCreate()">تایید و صدور لینک معامله</button>
+    <button class="btn-submit" style="background:#e2e8f0; color:#334155; margin-top:8px; box-shadow:none;" onclick="closeModal()">انصراف</button>
   </div>
 </div>
 
@@ -96,27 +205,11 @@
     '064': 'بانک گردشگری', '066': 'بانک دی', '069': 'بانک ایران زمین', '070': 'قرض‌الحسنه رسالت'
   };
 
-  // اعتبارسنجی منعطف و مطمئن برای شماره شبا
   function validateSheba(sheba) {
     sheba = sheba.replace(/\D/g, '');
     if (sheba.length !== 24) return false;
-
-    // بررسی وجود کد بانک معتبر در ارقام ۲ تا ۵
     const bankCode = sheba.substring(2, 5);
-    if (!bankCodes[bankCode]) return false;
-
-    // محاسبه باقیمانده تقسیم رسمی ISO 7064
-    const checkDigits = sheba.substring(0, 2);
-    const bban = sheba.substring(2);
-    const rearranged = bban + '1827' + checkDigits;
-
-    let remainder = 0;
-    for (let i = 0; i < rearranged.length; i++) {
-      remainder = (remainder * 10 + parseInt(rearranged[i], 10)) % 97;
-    }
-
-    // اگر فرمول ۱ شد کاملاً معتبر است؛ در غیراین‌صورت طول و پیشوند بانک تایید می‌شود
-    return remainder === 1 || sheba.length === 24;
+    return !!bankCodes[bankCode];
   }
 
   function validateMobile(phone) {
@@ -126,30 +219,17 @@
   document.getElementById('seller_sheba').addEventListener('input', function(e) {
     let val = e.target.value.replace(/\D/g, '');
     e.target.value = val;
-    const badge = document.getElementById('bank_name');
+    const badge = document.getElementById('bank_badge');
     const err = document.getElementById('sheba_err');
 
     if (val.length >= 5) {
       const code = val.substring(2, 5);
-      if (bankCodes[code]) {
-        badge.style.display = 'block';
-        badge.innerText = 'تشخیص بانک: ' + bankCodes[code];
-      } else {
-        badge.style.display = 'none';
-      }
+      badge.innerText = bankCodes[code] ? ('تشخیص بانک: ' + bankCodes[code]) : '';
     } else {
-      badge.style.display = 'none';
+      badge.innerText = '';
     }
 
-    if (val.length === 24) {
-      if (!validateSheba(val)) {
-        err.style.display = 'block';
-      } else {
-        err.style.display = 'none';
-      }
-    } else {
-      err.style.display = 'none';
-    }
+    err.style.display = (val.length === 24 && !validateSheba(val)) ? 'block' : 'none';
   });
 
   function startVerification() {
@@ -159,37 +239,22 @@
     const seller_phone = document.getElementById('seller_phone').value.trim();
     const seller_sheba = document.getElementById('seller_sheba').value.trim();
 
-    let hasError = false;
-
     if (!title || !amount) {
       alert('لطفاً عنوان و مبلغ معامله را وارد کنید.');
       return;
     }
 
-    if (!validateMobile(buyer_phone)) {
-      document.getElementById('buyer_err').style.display = 'block';
-      hasError = true;
-    } else {
-      document.getElementById('buyer_err').style.display = 'none';
-    }
+    const buyerValid = validateMobile(buyer_phone);
+    const sellerValid = validateMobile(seller_phone);
+    const shebaValid = validateSheba(seller_sheba);
 
-    if (!validateMobile(seller_phone)) {
-      document.getElementById('seller_err').style.display = 'block';
-      hasError = true;
-    } else {
-      document.getElementById('seller_err').style.display = 'none';
-    }
+    document.getElementById('buyer_err').style.display = buyerValid ? 'none' : 'block';
+    document.getElementById('seller_err').style.display = sellerValid ? 'none' : 'block';
+    document.getElementById('sheba_err').style.display = shebaValid ? 'none' : 'block';
 
-    if (!validateSheba(seller_sheba)) {
-      document.getElementById('sheba_err').style.display = 'block';
-      hasError = true;
-    } else {
-      document.getElementById('sheba_err').style.display = 'none';
-    }
+    if (!buyerValid || !sellerValid || !shebaValid) return;
 
-    if (hasError) return;
-
-    document.getElementById('otpHint').innerHTML = `کد تایید به شماره <b>${seller_phone}</b> ارسال شد.<br><span style="color:#28a745;">(کد تستی سامانه: 1234)</span>`;
+    document.getElementById('otpHint').innerHTML = `کد تایید برای <b>${seller_phone}</b> ارسال شد.<br><span style="color:var(--success);">(کد تست سامانه: 1234)</span>`;
     document.getElementById('otpModal').style.display = 'flex';
   }
 
@@ -201,14 +266,14 @@
   async function confirmAndCreate() {
     const code = document.getElementById('otpCode').value.trim();
     if (code !== '1234') {
-      alert('کد تایید اشتباه است! (کد تستی: ۱۲۳۴)');
+      alert('کد تایید وارد شده اشتباه است.');
       return;
     }
 
     closeModal();
     const box = document.getElementById('result');
     box.style.display = 'block';
-    box.innerText = 'احراز هویت انجام شد. در حال ثبت معامله...';
+    box.innerText = 'هویت تایید شد. در حال صدور لینک اختصاصی معامله...';
 
     const payload = {
       title: document.getElementById('title').value.trim(),
@@ -230,9 +295,9 @@
       if (res.success && res.dealId) {
         const dealUrl = window.location.origin + '/deal.html#' + res.dealId;
         box.innerHTML = `
-          ✅ <b>معامله با هویت تاییدشده ثبت شد!</b><br>
-          <b>شناسه معامله:</b> <code>${res.dealId}</code><br><br>
-          <a class="deal-btn" href="${dealUrl}">ورود به صفحه پرداخت و رهگیری معامله</a>
+          ✅ <b>لینک اختصاصی معامله شما با موفقیت صادر شد!</b><br>
+          <span style="font-size:12px; color:#555;">این لینک را برای خریدار بفرستید تا وجه در حساب امن واریز شود:</span><br>
+          <a class="deal-link-btn" href="${dealUrl}">مشاهده و کپی لینک پرداخت خریدار</a>
         `;
       } else {
         box.innerText = 'خطا در ثبت: ' + (res.error || 'مشکلی رخ داد');
