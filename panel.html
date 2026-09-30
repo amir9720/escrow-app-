@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>پنل کاربری و ویترین آگهی‌ها | واسطه پرداخت امن</title>
+  <title>پنل کاربری و آگهی‌ها | واسطه پرداخت امن</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -38,7 +38,6 @@
     }
     .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; color: var(--primary); }
 
-    /* ویترین زنده آگهی‌ها */
     .ads-showcase {
       display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 10px;
       scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none;
@@ -128,19 +127,17 @@
     <a href="/" style="font-size:12px; color:var(--primary); text-decoration:none; font-weight:bold;">ثبت معامله جدید</a>
   </div>
 
-  <!-- ویترین زنده تبلیغات ثبت‌شده -->
   <div>
     <div style="font-size:13px; font-weight:800; color:#334155; margin-bottom:8px; padding:0 4px;">
       ویترین آگهی‌های فروشندگان تاییدشده
     </div>
     <div class="ads-showcase" id="adShowcase">
       <div id="noAdsBox" class="empty-ads" style="width:100%;">
-        هنوز آگهی ثبت نشده است. فروشندگان تاییدشده می‌توانند آگهی پیج و کالای خود را به صورت رایگان در این بخش ثبت کنند.
+        هنوز آگهی ثبت نشده است. فروشندگان احراز هویت شده می‌توانند آگهی پیج و کالای خود را به صورت رایگان در این بخش ثبت کنند.
       </div>
     </div>
   </div>
 
-  <!-- بخش احراز هویت / ثبت‌نام -->
   <div id="authSection" class="card">
     <h3 style="margin-top:0; text-align:center;">ورود / ثبت‌نام در سامانه</h3>
     <div class="role-grid">
@@ -184,7 +181,6 @@
     </div>
   </div>
 
-  <!-- داشبورد بعد از ورود -->
   <div id="dashSection" class="card" style="display:none;">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:15px;">
       <div>
@@ -196,9 +192,14 @@
 
     <div id="viewActivity">
       <div id="sellerActions">
+        <div id="storeBioBox" style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:14px; margin-bottom:15px; text-align:right;">
+          <b style="color:#1e40af; font-size:13px;">🔗 لینک اختصاصی شما برای بیو اینستاگرام:</b>
+          <input type="text" id="storeBioInput" readonly style="margin-top:8px; direction:ltr; text-align:left; font-size:12px; background:#fff; width:100%; padding:8px; border:1px solid #bfdbfe; border-radius:8px;" onclick="this.select()">
+          <small style="color:#64748b; display:block; margin-top:5px;">این لینک را کپی کرده و در بایو پیج خود بگذارید تا خریداران از این درگاه خرید کنند.</small>
+        </div>
         <a href="/" class="btn btn-accent" style="display:block; text-align:center; text-decoration:none; margin-bottom:14px;">+ ایجاد لینک معامله امن جدید</a>
         <div id="sellerDealsList" style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:15px; font-size:13px; text-align:center; color:var(--muted);">
-          در حال بررسی سفارش‌های ثبت‌شده به نام شما...
+          در حال بررسی سفارش‌های ثبت‌شده...
         </div>
       </div>
       <div id="buyerActions" style="display:none;">
@@ -208,7 +209,6 @@
       </div>
     </div>
 
-    <!-- فرم ثبت آگهی -->
     <div id="viewAds" style="display:none;">
       <div style="background:var(--primary-light); border:1.5px dashed var(--primary); border-radius:12px; padding:16px;">
         <h4 style="margin:0 0 6px; font-size:15px;">ثبت آگهی در ویترین سراسری</h4>
@@ -234,7 +234,6 @@
 
 </div>
 
-<!-- منوی پایین موبایل -->
 <nav class="bottom-bar">
   <button class="nav-btn active" onclick="switchNav('home')">
     <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -297,7 +296,7 @@
     document.getElementById('s_nid_err').style.display = (val.length === 10 && !checkNationalCode(val)) ? 'block' : 'none';
   });
 
-  function handleAuth() {
+  async function handleAuth() {
     if (activeRole === 'seller') {
       const name = document.getElementById('s_name').value.trim();
       const phone = document.getElementById('s_phone').value.trim();
@@ -309,14 +308,26 @@
         return;
       }
       if (!checkNationalCode(nid)) {
-        alert('کد ملی وارد شده نامعتبر است.');
+        alert('کد ملی وارد شده طبق الگوریتم رسمی صحیح نیست.');
         return;
       }
       if (card.length < 16) {
         alert('شماره کارت ۱۶ رقمی الزامی است.');
         return;
       }
-      loggedUser = { name, phone, role: 'seller' };
+
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, national_id: nid, card_number: card, role: 'seller' })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        alert('خطا در ثبت کاربر: ' + (data.error || ''));
+        return;
+      }
+
+      loggedUser = { id: data.userId || phone, name, phone, role: 'seller' };
     } else {
       const name = document.getElementById('b_name').value.trim();
       const phone = document.getElementById('b_phone').value.trim();
@@ -345,6 +356,9 @@
       document.getElementById('sellerActions').style.display = 'block';
       document.getElementById('buyerActions').style.display = 'none';
 
+      const profileUrl = window.location.origin + '/profile.html?id=' + loggedUser.phone;
+      document.getElementById('storeBioInput').value = profileUrl;
+
       pricing.innerHTML = '<span style="color:#15803d;">هزینه درج آگهی: رایگان (ویژه فروشندگان تاییدشده)</span>';
       adBtn.innerText = 'انتشار رایگان در ویترین';
       adBtn.style.background = '#10b981';
@@ -364,7 +378,6 @@
     }
   }
 
-  // بارگذاری معاملات واقعی از دیتابیس D1 بر اساس شماره تماس
   async function fetchUserDeals(role, phone) {
     const container = document.getElementById(role === 'seller' ? 'sellerDealsList' : 'buyerDealsList');
     try {
