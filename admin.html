@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>میز کار داوری و مدیریت پلتفرم امانی</title>
+  <style>
+    :root {
+      --primary: #1e293b;
+      --accent: #2563eb;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
+      background: var(--bg); margin: 0; padding: 20px 14px 80px; color: var(--text);
+      display: flex; justify-content: center;
+    }
+    .wrapper { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 16px; }
+    
+    .header {
+      background: var(--primary); color: #fff; padding: 20px; border-radius: var(--radius);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    .header h1 { font-size: 18px; margin: 0; }
+    
+    .auth-box {
+      background: var(--card); padding: 30px; border-radius: var(--radius);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; max-width: 400px; margin: 40px auto;
+    }
+    .auth-box input {
+      width: 100%; padding: 12px; font-size: 15px; border: 1.5px solid var(--border);
+      border-radius: 8px; margin-bottom: 12px; text-align: center;
+    }
+    
+    .btn {
+      padding: 10px 16px; border: none; border-radius: 8px; font-weight: bold;
+      cursor: pointer; font-family: inherit; font-size: 13px; transition: 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .stat-card {
+      background: #fff; padding: 16px; border-radius: var(--radius);
+      border: 1px solid var(--border); text-align: center;
+    }
+    .stat-val { font-size: 22px; font-weight: 800; color: var(--accent); margin-top: 6px; }
+
+    .deal-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .deal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+    .deal-title { font-weight: 800; font-size: 16px; }
+    .status-tag { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+    
+    .tag-pending_payment { background: #fef3c7; color: #b45309; }
+    .tag-held { background: #dbeafe; color: #1e40af; }
+    .tag-shipped { background: #ede9fe; color: #5b21b6; }
+    .tag-released { background: #d1fae5; color: #065f46; }
+    .tag-dispute { background: #fee2e2; color: #991b1b; }
+    .tag-refunded { background: #f3f4f6; color: #374151; }
+
+    .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; font-size: 13px; }
+    .detail-item { color: var(--muted); }
+    .detail-item b { color: var(--text); }
+
+    .actions-bar {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
+      padding-top: 10px; border-top: 1px dashed var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  
+  <!-- فرم ورود رمز ادمین -->
+  <div id="loginSection" class="auth-box">
+    <h3>ورود به میز داوری واسطه</h3>
+    <input type="password" id="adminPass" placeholder="رمز عبور مدیریت (پیش‌فرض: admin1234)">
+    <button class="btn btn-primary" style="width:100%;" onclick="loadAdminData()">ورود به پنل</button>
+  </div>
+
+  <!-- داشبورد اصلی ادمین -->
+  <div id="dashboardSection" style="display:none; flex-direction:column; gap:16px;">
+    
+    <div class="header">
+      <h1>داشبورد کنترل مالی و حل اختلاف سامانه</h1>
+      <button class="btn btn-danger" onclick="logout()">خروج</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div>کل معاملات</div>
+        <div class="stat-val" id="totalDealsCount">۰</div>
+      </div>
+      <div class="stat-card">
+        <div>امانت موجود نزد درگاه (held)</div>
+        <div class="stat-val" id="totalHeldAmount">۰ تومان</div>
+      </div>
+      <div class="stat-card">
+        <div>پرونده‌های اختلافی (داوری)</div>
+        <div class="stat-val" style="color:var(--danger);" id="disputeCount">۰</div>
+      </div>
+    </div>
+
+    <h3>لیست تراکنش‌ها و پرونده‌ها</h3>
+    <div id="dealsContainer" style="display:flex; flex-direction:column; gap:12px;"></div>
+
+  </div>
+
+</div>
+
+<script>
+  let adminKey = localStorage.getItem('escrow_admin_key') || '';
+
+  if (adminKey) {
+    document.getElementById('adminPass').value = adminKey;
+    loadAdminData();
+  }
+
+  async function loadAdminData() {
+    const key = document.getElementById('adminPass').value.trim();
+    if (!key) { alert('لطفاً رمز عبور را وارد کنید'); return; }
+
+    try {
+      const res = await fetch(`/api/admin?key=${encodeURIComponent(key)}`);
+      const data = await res.json();
+
+      if (!data.success) {
+        alert(data.error || 'رمز ورود اشتباه است');
+        return;
+      }
+
+      adminKey = key;
+      localStorage.setItem('escrow_admin_key', key);
+
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('dashboardSection').style.display = 'flex';
+
+      renderDeals(data.deals || []);
+    } catch (e) {
+      alert('خطا در دریافت اطلاعات ادمین');
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('escrow_admin_key');
+    location.reload();
+  }
+
+  function renderDeals(deals) {
+    const container = document.getElementById('dealsContainer');
+    container.innerHTML = '';
+
+    let heldTotal = 0;
+    let disputes = 0;
+
+    document.getElementById('totalDealsCount').innerText = deals.length;
+
+    deals.forEach(deal => {
+      if (deal.status === 'held') heldTotal += parseInt(deal.amount || 0);
+      if (deal.status === 'dispute') disputes++;
+
+      const card = document.createElement('div');
+      card.className = 'deal-card';
+
+      const statusLabels = {
+        'pending_payment': 'در انتظار پرداخت خریدار',
+        'held': 'وجه در امانت (پیش‌پرداخت شده)',
+        'shipped': 'ارسال کالا / مهلت تست',
+        'released': 'تسویه شده با فروشنده',
+        'dispute': '⚠️ نیازمند داوری ادمین',
+        'refunded': 'مرجوع شده به خریدار'
+      };
+
+      card.innerHTML = `
+        <div class="deal-header">
+          <div class="deal-title">#${deal.id} - ${deal.title}</div>
+          <span class="status-tag tag-${deal.status}">${statusLabels[deal.status] || deal.status}</span>
+        </div>
+        <div class="details-grid">
+          <div class="detail-item">مبلغ: <b>${Number(deal.amount).toLocaleString('fa-IR')} تومان</b></div>
+          <div class="detail-item">فروشنده: <b>${deal.seller_phone}</b></div>
+          <div class="detail-item">خریدار: <b>${deal.buyer_phone}</b></div>
+          <div class="detail-item">تسویه فروشنده: <b>${deal.seller_sheba}</b></div>
+          <div class="detail-item">کد پستی/بارنامه: <b>${deal.tracking_code || '---'}</b></div>
+          <div class="detail-item">تاریخ: <b>${new Date(deal.created_at).toLocaleDateString('fa-IR')}</b></div>
+        </div>
+        
+        <div class="actions-bar">
+          <button class="btn btn-success" onclick="resolveDispute('${deal.id}', 'force_release')">
+            آزادسازی وجه به نفع فروشنده
+          </button>
+          <button class="btn btn-danger" onclick="resolveDispute('${deal.id}', 'refund_buyer')">
+            ابطال معامله و عودت وجه به خریدار
+          </button>
+          <a href="/deal.html#${deal.id}" target="_blank" class="btn btn-primary" style="text-decoration:none;">
+            مشاهده صفحه اختصاصی
+          </a>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+
+    document.getElementById('totalHeldAmount').innerText = Number(heldTotal).toLocaleString('fa-IR') + ' تومان';
+    document.getElementById('disputeCount').innerText = disputes;
+  }
+
+  async function resolveDispute(dealId, action) {
+    const actionText = action === 'force_release' 
+      ? 'آیا از آزادسازی وجه به حساب فروشنده اطمینان دارید؟' 
+      : 'آیا از لغو معامله و برگشت دادن وجه به خریدار اطمینان دارید؟';
+
+    if (!confirm(actionText)) return;
+
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: adminKey, dealId: dealId, action: action })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message);
+        loadAdminData();
+      } else {
+        alert('خطا: ' + data.error);
+      }
+    } catch (e) {
+      alert('خطا در برقراری ارتباط');
+    }
+  }
+</script>
+
+</body>
+</html>
