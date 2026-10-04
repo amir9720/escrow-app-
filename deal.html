@@ -388,16 +388,28 @@
     if (d.success) location.reload();
   }
 
-  async function releasePayment() {
-    if (!confirm('آیا کالا را سالم تحویل گرفتید و آزادسازی وجه را تایید می‌کنید؟')) return;
-    const res = await fetch('/api/deals', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: currentDeal.id, action: 'release' })
-    });
-    const d = await res.json();
-    if (d.success) location.reload();
+    async function releasePayment() {
+    if (!confirm('آیا کالا را سالم تحویل گرفتید و آزادسازی مبلغ به حساب فروشنده را تایید می‌کنید؟')) return;
+
+    try {
+      const res = await fetch('/api/settle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dealId: currentDeal.id })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        alert(`وجه با موفقیت آزاد شد.\nمبلغ تسویه‌شده به حساب فروشنده: ${Number(data.payout_amount).toLocaleString('fa-IR')} تومان`);
+        location.reload();
+      } else {
+        alert('خطا در تسویه: ' + (data.error || 'مشکلی رخ داد'));
+      }
+    } catch(e) {
+      alert('خطا در برقراری ارتباط با سامانه تسویه.');
+    }
   }
+
 
   async function openDispute() {
     const r = prompt('علت شکایت یا مغایرت را وارد نمایید:');
