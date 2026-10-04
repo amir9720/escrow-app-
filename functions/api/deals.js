@@ -33,7 +33,6 @@ export async function onRequestPost({ request, env }) {
     }
 
     const id = 'deal_' + Math.random().toString(36).substring(2, 8);
-    // وضعیت قطعی در بدو ایجاد: حتماً در انتظار پرداخت است
     const initialStatus = 'pending_payment';
 
     await env.DB.prepare(`
@@ -51,16 +50,18 @@ export async function onRequestPost({ request, env }) {
 
 export async function onRequestPatch({ request, env }) {
   try {
-    const { id, action, tracking_code, reason } = await request.json();
+    const { id, action, tracking_code, reason, proof_url } = await request.json();
     if (!id || !action) return new Response(JSON.stringify({ success: false, error: 'پارامتر ناقص است' }), { status: 400 });
 
     if (action === 'ship') {
-      await env.DB.prepare("UPDATE deals SET status = 'shipped', tracking_code = ? WHERE id = ?")
-        .bind(tracking_code || '', id).run();
+      const now = Date.now();
+      await env.DB.prepare("UPDATE deals SET status = 'shipped', tracking_code = ?, shipped_at = ? WHERE id = ?")
+        .bind(tracking_code || '', now, id).run();
     } else if (action === 'release') {
       await env.DB.prepare("UPDATE deals SET status = 'released' WHERE id = ?").bind(id).run();
     } else if (action === 'dispute') {
-      await env.DB.prepare("UPDATE deals SET status = 'dispute' WHERE id = ?").bind(id).run();
+      await env.DB.prepare("UPDATE deals SET status = 'dispute', dispute_reason = ?, dispute_proof_url = ? WHERE id = ?")
+        .bind(reason || 'اعلام نارضایتی بدون ذکر جزئیات', proof_url || '', id).run();
     }
 
     return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
