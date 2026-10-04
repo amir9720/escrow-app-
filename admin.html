@@ -25,13 +25,11 @@
       display: flex; justify-content: center;
     }
     .wrapper { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 16px; }
-    
     .header {
       background: var(--primary); color: #fff; padding: 20px; border-radius: var(--radius);
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
     }
     .header h1 { font-size: 18px; margin: 0; }
-    
     .auth-box {
       background: var(--card); padding: 30px; border-radius: var(--radius);
       box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; max-width: 400px; margin: 40px auto;
@@ -40,7 +38,6 @@
       width: 100%; padding: 12px; font-size: 15px; border: 1.5px solid var(--border);
       border-radius: 8px; margin-bottom: 12px; text-align: center;
     }
-    
     .btn {
       padding: 10px 16px; border: none; border-radius: 8px; font-weight: bold;
       cursor: pointer; font-family: inherit; font-size: 13px; transition: 0.2s;
@@ -75,6 +72,11 @@
     .detail-item { color: var(--muted); }
     .detail-item b { color: var(--text); }
 
+    .dispute-box {
+      background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 8px;
+      padding: 12px; margin-top: 6px; font-size: 13px;
+    }
+
     .actions-bar {
       display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
       padding-top: 10px; border-top: 1px dashed var(--border);
@@ -85,14 +87,12 @@
 
 <div class="wrapper">
   
-  <!-- فرم ورود رمز ادمین -->
   <div id="loginSection" class="auth-box">
     <h3>ورود به میز داوری واسطه</h3>
     <input type="password" id="adminPass" placeholder="رمز عبور مدیریت (پیش‌فرض: admin1234)">
     <button class="btn btn-primary" style="width:100%;" onclick="loadAdminData()">ورود به پنل</button>
   </div>
 
-  <!-- داشبورد اصلی ادمین -->
   <div id="dashboardSection" style="display:none; flex-direction:column; gap:16px;">
     
     <div class="header">
@@ -170,7 +170,7 @@
     document.getElementById('totalDealsCount').innerText = deals.length;
 
     deals.forEach(deal => {
-      if (deal.status === 'held') heldTotal += parseInt(deal.amount || 0);
+      if (deal.status === 'held' || deal.status === 'shipped') heldTotal += parseInt(deal.amount || 0);
       if (deal.status === 'dispute') disputes++;
 
       const card = document.createElement('div');
@@ -185,6 +185,16 @@
         'refunded': 'مرجوع شده به خریدار'
       };
 
+      let disputeHtml = '';
+      if (deal.status === 'dispute') {
+        disputeHtml = `
+          <div class="dispute-box">
+            <b>⚠️ ادعای خریدار:</b> ${deal.dispute_reason || 'بدون شرح'}<br>
+            ${deal.dispute_proof_url ? `<b>📎 مدرک ارسالی:</b> <a href="${deal.dispute_proof_url}" target="_blank" style="color:var(--accent);">مشاهده تصویر/مدرک خریدار</a>` : '<i>هیچ مدرک تصویری ضمیمه نشده است.</i>'}
+          </div>
+        `;
+      }
+
       card.innerHTML = `
         <div class="deal-header">
           <div class="deal-title">#${deal.id} - ${deal.title}</div>
@@ -198,6 +208,8 @@
           <div class="detail-item">کد پستی/بارنامه: <b>${deal.tracking_code || '---'}</b></div>
           <div class="detail-item">تاریخ: <b>${new Date(deal.created_at).toLocaleDateString('fa-IR')}</b></div>
         </div>
+
+        ${disputeHtml}
         
         <div class="actions-bar">
           <button class="btn btn-success" onclick="resolveDispute('${deal.id}', 'force_release')">
