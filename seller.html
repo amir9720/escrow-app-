@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>پنل مدیریت فروشنده - پیگیری سفارش‌ها</title>
+  <title>پنل مدیریت فروشگاه - سفارشات و تسویه</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -20,7 +20,7 @@
       background: var(--bg); margin: 0; padding: 18px 12px 60px; color: var(--text);
       display: flex; justify-content: center;
     }
-    .container { width: 100%; max-width: 550px; display: flex; flex-direction: column; gap: 14px; }
+    .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 14px; }
     .header {
       background: #fff; padding: 16px; border-radius: var(--radius);
       border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
@@ -29,11 +29,17 @@
       background: #fff; border-radius: var(--radius); padding: 18px;
       border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03);
     }
-    .deal-item {
+    .order-item {
       border: 1px solid var(--border); border-radius: 12px; padding: 14px;
       margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;
     }
     .status-tag { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; width: fit-content; }
+    .tag-pending_payment { background: #fef3c7; color: #b45309; }
+    .tag-held { background: #dbeafe; color: #1e40af; }
+    .tag-shipped { background: #ede9fe; color: #5b21b6; }
+    .tag-released { background: #d1fae5; color: #065f46; }
+    .tag-dispute { background: #fee2e2; color: #991b1b; }
+
     .btn {
       padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
       font-family: inherit; font-size: 13px; text-decoration: none; text-align: center;
@@ -45,67 +51,109 @@
 
 <div class="container">
   <div class="header">
-    <h3 style="margin:0; font-size:16px;">📦 پنل سفارشات فروشگاه</h3>
-    <a href="/" style="font-size:12px; color:var(--primary); text-decoration:none; font-weight:bold;">+ ساخت معامله جدید</a>
+    <h3 style="margin:0; font-size:16px;">📦 پنل مدیریت سفارشات فروشگاه</h3>
+    <a href="/" style="font-size:12px; color:var(--primary); text-decoration:none; font-weight:bold;">صفحه اصلی</a>
   </div>
 
   <div id="loginBox" class="card" style="text-align:center;">
-    <h4 style="margin:0 0 8px;">ورود به پنل فروشنده</h4>
-    <p style="font-size:12px; color:var(--muted); margin:0 0 12px;">شماره موبایل خود را وارد کنید تا لیست سفارش‌های شما نمایش داده شود:</p>
+    <h4 style="margin:0 0 8px;">ورود به پنل فروشگاه</h4>
+    <p style="font-size:12px; color:var(--muted); margin:0 0 12px;">شماره موبایل مدیریت فروشگاه را وارد کنید:</p>
     <input type="tel" id="phoneInput" placeholder="09xxxxxxxxx" maxlength="11" style="width:100%; padding:12px; text-align:center; border:1px solid var(--border); border-radius:8px; margin-bottom:12px; font-size:15px;">
-    <button class="btn btn-primary" style="width:100%;" onclick="fetchSellerDeals()">مشاهده سفارشات</button>
+    <button class="btn btn-primary" style="width:100%;" onclick="fetchShopAndOrders()">ورود و مشاهده سفارشات</button>
   </div>
 
-  <div id="dealsList" style="display:none; flex-direction:column; gap:10px;"></div>
+  <div id="shopPanel" style="display:none; flex-direction:column; gap:12px;">
+    <div class="card" style="background:#eff6ff; border-color:#bfdbfe;">
+      <h3 style="margin:0 0 4px; color:var(--primary);" id="displayShopName">---</h3>
+      <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">لینک دائمی درگاه شما:</div>
+      <div style="font-family:monospace; direction:ltr; font-weight:bold; font-size:13px; background:#fff; padding:8px; border-radius:6px;" id="displayShopLink"></div>
+      <button class="btn btn-primary" style="margin-top:8px;" onclick="copyPermanentLink()">📋 کپی لینک درگاه فروشگاه</button>
+    </div>
+
+    <h3>لیست سفارشات مشتریان</h3>
+    <div id="ordersContainer"></div>
+  </div>
 </div>
 
 <script>
+  let currentShopLink = '';
+
   const saved = localStorage.getItem('user_active_phone');
   if (saved) {
     document.getElementById('phoneInput').value = saved;
-    fetchSellerDeals();
+    fetchShopAndOrders();
   }
 
-  async function fetchSellerDeals() {
+  async function fetchShopAndOrders() {
     const phone = document.getElementById('phoneInput').value.trim();
     if (!/^09\d{9}$/.test(phone)) { alert('شماره معتبر نیست'); return; }
 
     localStorage.setItem('user_active_phone', phone);
 
-    const res = await fetch(`/api/deals?phone=${phone}`);
-    const deals = await res.json();
+    // ۱. دریافت اطلاعات فروشگاه
+    const shopRes = await fetch(`/api/shops?phone=${phone}`);
+    const shop = await shopRes.json();
 
-    document.getElementById('loginBox').style.display = 'none';
-    const listEl = document.getElementById('dealsList');
-    listEl.style.display = 'flex';
-    listEl.innerHTML = '';
-
-    if (!deals || deals.length === 0) {
-      listEl.innerHTML = '<div class="card" style="text-align:center; color:var(--muted);">هیچ سفارشی برای این شماره ثبت نشده است.</div>';
+    if (!shop || !shop.id) {
+      alert('فروشگاهی با این شماره یافت نشد. لطفاً ابتدا در صفحه اصلی ثبت‌نام کنید.');
       return;
     }
 
-    deals.forEach(d => {
-      const item = document.createElement('div');
-      item.className = 'deal-item';
-      item.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <b>#${d.id} - ${d.title}</b>
-          <span style="font-size:13px; font-weight:bold; color:var(--primary);">${Number(d.amount).toLocaleString('fa-IR')} تومان</span>
-        </div>
-        <div style="font-size:12px; color:var(--muted);">وضعیت: <b>${d.status}</b> | خریدار: ${d.buyer_phone || 'هنوز پرداخت نکرده'}</div>
-        <div style="display:flex; gap:8px; margin-top:6px;">
-          <a href="/deal.html#${d.id}" class="btn btn-primary" style="flex:1;">مشاهده و ثبت بارنامه</a>
-          <button class="btn" style="background:#e2e8f0; color:#334155;" onclick="copyLink('${d.id}')">📋 کپی لینک خرید برای مشتری</button>
-        </div>
-      `;
-      listEl.appendChild(item);
-    });
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('shopPanel').style.display = 'flex';
+    document.getElementById('displayShopName').innerText = shop.name;
+    
+    currentShopLink = `${window.location.origin}/pay.html?shop=${shop.id}`;
+    document.getElementById('displayShopLink').innerText = currentShopLink;
+
+    // ۲. دریافت سفارش‌ها
+    const ordersRes = await fetch(`/api/deals?shop_id=${shop.id}`);
+    const orders = await ordersRes.json();
+    renderOrders(orders);
   }
 
-  function copyLink(id) {
-    const link = `${window.location.origin}/deal.html#${id}`;
-    navigator.clipboard.writeText(link).then(() => alert('لینک خرید اختصاصی کپی شد. آن را برای خریدار ارسال کنید.'));
+  function copyPermanentLink() {
+    navigator.clipboard.writeText(currentShopLink).then(() => alert('لینک درگاه کپی شد!'));
+  }
+
+  function renderOrders(orders) {
+    const container = document.getElementById('ordersContainer');
+    container.innerHTML = '';
+
+    if (!orders || orders.length === 0) {
+      container.innerHTML = '<div class="card" style="text-align:center; color:var(--muted);">هنوز هیچ سفارشی روی درگاه شما ثبت نشده است.</div>';
+      return;
+    }
+
+    const labels = {
+      'pending_payment': 'در انتظار پرداخت مشتری',
+      'held': 'وجه در امانت (آماده ارسال مرسوله)',
+      'shipped': 'ارسال شده (مهلت تست)',
+      'released': 'تسویه شده با شما',
+      'dispute': 'پرونده اختلافی'
+    };
+
+    orders.forEach(o => {
+      const el = document.createElement('div');
+      el.className = 'card order-item';
+      el.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <b>#${o.id} - ${Number(o.amount).toLocaleString('fa-IR')} تومان</b>
+          <span class="status-tag tag-${o.status}">${labels[o.status] || o.status}</span>
+        </div>
+        <div style="font-size:13px; line-height:1.6;">
+          🛒 <b>اقلام:</b> ${o.order_items || o.title}<br>
+          📱 <b>موبایل خریدار:</b> ${o.buyer_phone}<br>
+          📍 <b>نشانی تحویل:</b> ${o.buyer_address || 'ثبت نشده'}
+        </div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <a href="/deal.html#${o.id}" class="btn btn-primary" style="flex:1;">
+            مدیریت سفارش / ثبت کد رهگیری پستی
+          </a>
+        </div>
+      `;
+      container.appendChild(el);
+    });
   }
 </script>
 
