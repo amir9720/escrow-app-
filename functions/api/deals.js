@@ -26,19 +26,29 @@ export async function onRequestGet({ request, env }) {
 export async function onRequestPost({ request, env }) {
   try {
     const body = await request.json();
-    const { title, amount, buyer_phone, seller_phone, seller_sheba, fee_payer } = body;
+    const { title, amount, seller_phone, seller_sheba, seller_national_id, fee_payer } = body;
 
-    if (!title || !amount || !buyer_phone || !seller_phone || !seller_sheba) {
-      return new Response(JSON.stringify({ success: false, error: 'تمامی فیلدها الزامی است' }), { status: 400 });
+    // فقط اطلاعات فروشنده چک می‌شود (بدون نیاز به خریدار)
+    if (!title || !amount || !seller_phone || !seller_sheba) {
+      return new Response(JSON.stringify({ success: false, error: 'تمامی فیلدهای فروشنده الزامی است' }), { status: 400 });
     }
 
     const id = 'deal_' + Math.random().toString(36).substring(2, 8);
     const initialStatus = 'pending_payment';
 
     await env.DB.prepare(`
-      INSERT INTO deals (id, title, amount, buyer_phone, seller_phone, seller_sheba, fee_payer, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(id, title, amount, buyer_phone, seller_phone, seller_sheba, fee_payer || 'buyer', initialStatus).run();
+      INSERT INTO deals (id, title, amount, seller_phone, seller_sheba, seller_national_id, buyer_phone, fee_payer, status)
+      VALUES (?, ?, ?, ?, ?, ?, '', ?, ?)
+    `).bind(
+      id,
+      title,
+      amount,
+      seller_phone,
+      seller_sheba,
+      seller_national_id || '',
+      fee_payer || 'buyer',
+      initialStatus
+    ).run();
 
     return new Response(JSON.stringify({ success: true, dealId: id }), {
       headers: { 'Content-Type': 'application/json' }
@@ -50,10 +60,12 @@ export async function onRequestPost({ request, env }) {
 
 export async function onRequestPatch({ request, env }) {
   try {
-    const { id, action, tracking_code, reason, proof_url } = await request.json();
+    const { id, action, buyer_phone, tracking_code, reason, proof_url } = await request.json();
     if (!id || !action) return new Response(JSON.stringify({ success: false, error: 'پارامتر ناقص است' }), { status: 400 });
 
-    if (action === 'ship') {
+    if (action === 'set_buyer') {
+      await env.DB.prepare("UPDATE deals SET buyer_phone = ? WHERE id = ?").bind(buyer_phone, id).run();
+    } else if (action === 'ship') {
       const now = Date.now();
       await env.DB.prepare("UPDATE deals SET status = 'shipped', tracking_code = ?, shipped_at = ? WHERE id = ?")
         .bind(tracking_code || '', now, id).run();
@@ -61,7 +73,7 @@ export async function onRequestPatch({ request, env }) {
       await env.DB.prepare("UPDATE deals SET status = 'released' WHERE id = ?").bind(id).run();
     } else if (action === 'dispute') {
       await env.DB.prepare("UPDATE deals SET status = 'dispute', dispute_reason = ?, dispute_proof_url = ? WHERE id = ?")
-        .bind(reason || 'اعلام نارضایتی بدون ذکر جزئیات', proof_url || '', id).run();
+        .bind(reason || 'اعلام مغایرت بدون شرح', proof_url || '', id).run();
     }
 
     return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
