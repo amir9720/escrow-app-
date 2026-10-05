@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>پرداخت امن سفارش</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --success: #10b981;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
+      background: var(--bg); margin: 0; padding: 16px 12px 60px; color: var(--text);
+      display: flex; justify-content: center;
+    }
+    .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
+    .card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 22px; box-shadow: var(--shadow); border: 1px solid var(--border);
+    }
+    .shop-header {
+      text-align: center; padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .shop-name { font-size: 18px; font-weight: 800; color: var(--primary); margin: 6px 0 2px; }
+    .field { margin-bottom: 14px; text-align: right; }
+    .field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #334155; }
+    .field input, .field textarea {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; background: #fff;
+    }
+    .btn {
+      width: 100%; padding: 14px; border: none; border-radius: 10px;
+      font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px;
+    }
+    .btn-pay { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
+    .trust-box {
+      background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px;
+      padding: 12px; font-size: 12px; color: #1e40af; line-height: 1.6; margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div id="loading" style="text-align:center; padding:40px; color:var(--muted);">در حال بارگذاری اطلاعات فروشگاه...</div>
+
+  <div id="mainContent" class="card" style="display:none;">
+    <div class="shop-header">
+      <div style="font-size:12px; color:var(--muted);">درگاه پرداخت امن و معتبر واسطه</div>
+      <div class="shop-name" id="shopTitle">---</div>
+      <div style="font-size:11px; color:#10b981; font-weight:bold; margin-top:4px;">🛡️️ تراکنش تحت پوشش تضمین بازگشت وجه</div>
+    </div>
+
+    <div class="field">
+      <label>مبلغ فاکتور سفارش (تومان):</label>
+      <input type="number" id="payAmount" placeholder="مبلغ توافق‌شده با فروشنده (مثلاً 500000)">
+    </div>
+
+    <div class="field">
+      <label>اقلام خریداری شده (مدل، رنگ، سایز، تعداد):</label>
+      <textarea id="orderItems" rows="2" placeholder="مثال: شلوار جین سایز 32 + تیشرت مشکی L"></textarea>
+    </div>
+
+    <div class="field">
+      <label>شماره موبایل شما (خریدار جهت دریافت کد رهگیری):</label>
+      <input type="tel" id="buyerPhone" placeholder="09xxxxxxxxx" maxlength="11">
+    </div>
+
+    <div class="field">
+      <label>نشانی دقیق پستی و کدپستی جهت تحویل کالا:</label>
+      <textarea id="buyerAddress" rows="2" placeholder="استان، شهر، خیابان، پلاک، واحد و کدپستی ۱۰ رقمی"></textarea>
+    </div>
+
+    <button class="btn btn-pay" id="btnPay" onclick="createOrderAndPay()">
+      💳 پرداخت امن از طریق شاپرک
+    </button>
+
+    <div class="trust-box">
+      🔒 <b>پروتکل امانت واسطه:</b> پول شما تا زمان تحویل کالا و بررسی در مهلت تست ۴۸ ساعته در حساب امانت می‌ماند و پس از تایید شما به فروشنده تحویل داده می‌شود.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const shopId = urlParams.get('shop');
+  let currentShop = null;
+
+  async function loadShop() {
+    if (!shopId) {
+      document.getElementById('loading').innerText = 'شناسه فروشگاه نامعتبر است.';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/shops?id=${shopId}`);
+      const data = await res.json();
+      if (!data || data.error) {
+        document.getElementById('loading').innerText = 'فروشگاهی با این مشخصات یافت نشد.';
+        return;
+      }
+
+      currentShop = data;
+      document.getElementById('shopTitle').innerText = currentShop.name;
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+    } catch(e) {
+      document.getElementById('loading').innerText = 'خطا در بارگذاری فروشگاه.';
+    }
+  }
+
+  async function createOrderAndPay() {
+    const amount = document.getElementById('payAmount').value.trim();
+    const phone = document.getElementById('buyerPhone').value.trim();
+    const address = document.getElementById('buyerAddress').value.trim();
+    const items = document.getElementById('orderItems').value.trim();
+
+    if (!amount || Number(amount) < 1000) {
+      alert('لطفاً مبلغ معتبر سفارش را وارد کنید.');
+      return;
+    }
+
+    if (!/^09\d{9}$/.test(phone)) {
+      alert('شماره موبایل ۱۱ رقمی معتبر خریدار را وارد کنید.');
+      return;
+    }
+
+    if (!items || !address) {
+      alert('لطفاً اقلام سفارش و نشانی دقیق تحویل را بنویسید.');
+      return;
+    }
+
+    const btn = document.getElementById('btnPay');
+    btn.innerText = 'در حال ساخت سفارش و اتصال به درگاه...';
+    btn.disabled = true;
+
+    try {
+      // ۱. ساخت سفارش در دیتابیس
+      const orderRes = await fetch('/api/deals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shop_id: currentShop.id,
+          amount: amount,
+          buyer_phone: phone,
+          buyer_address: address,
+          order_items: items
+        })
+      });
+
+      const orderData = await orderRes.json();
+      if (!orderData.success || !orderData.dealId) {
+        alert('خطا در ثبت سفارش: ' + (orderData.error || ''));
+        btn.disabled = false;
+        btn.innerText = '💳 پرداخت امن از طریق شاپرک';
+        return;
+      }
+
+      // ذخیره شماره خریدار
+      localStorage.setItem('user_active_phone', phone);
+
+      // ۲. اتصال مستقیم به درگاه پرداخت زیبال
+      const payRes = await fetch('/api/pay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dealId: orderData.dealId })
+      });
+
+      const payData = await payRes.json();
+      if (payData.success && payData.payUrl) {
+        window.location.href = payData.payUrl;
+      } else {
+        // اگر هنوز زیبال متصل نشده باشد، به صفحه اختصاصی معامله می‌رود
+        window.location.href = `/deal.html#${orderData.dealId}`;
+      }
+
+    } catch(e) {
+      alert('خطا در اتصال به درگاه پرداخت.');
+      btn.disabled = false;
+      btn.innerText = '💳 پرداخت امن از طریق شاپرک';
+    }
+  }
+
+  loadShop();
+</script>
+
+</body>
+</html>
