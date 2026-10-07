@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /api/
 
-Sitemap: https://vasetepay.ir/sitemap.xml
+Sitemap: https://amnbekhar.ir/sitemap.xml
